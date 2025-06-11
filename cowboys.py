@@ -120,7 +120,7 @@ def updatedb(sql):
         sha = str(subprocess.check_output(['git', 'hash-object', 'cowboysgh.db']))[2:-3]
         with open(filename, "rb") as source_file:
             encoded_string = base64.b64encode(source_file.read()).decode("utf-8")
-        payload = {"message": f"Uploaded file at {datetime.datetime.utcnow().isoformat()}",
+        payload = {"message": f"Uploaded file at {dt.utcnow().isoformat()}",
                    "content": encoded_string,
                    "sha": sha}
         r = requests.put(f'https://api.github.com/repos/{repopath}/contents/{filename}',json=payload,headers=headers)
