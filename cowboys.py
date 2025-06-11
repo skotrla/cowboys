@@ -133,7 +133,7 @@ def updatedb(sql):
                 with open('cowboysgh.db', 'wb') as binary_file:
                     binary_file.write(base64.b64decode(contents.content))
     except Exception as e:
-        print(e.message)
+        print(e.Message)
 
 page = st.query_params.get_all('page')
 if len(page)==0:
