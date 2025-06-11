@@ -226,7 +226,7 @@ match page[0]:
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers">Sellers</a>'
             c2.markdown(html,unsafe_allow_html=True)
             c2.title('VETTED Sellers')
-            c2.dataframe(filter_dataframe(sellers,sellers.columns.tolist()),hide_index=True, column_config={'Contact':st.column_config.LinkColumn()})
+            c2.dataframe(filter_dataframe(users,users.columns.tolist()),hide_index=True, column_config={'Contact':st.column_config.LinkColumn()})
     case 'sellers':
         st.markdown("""
                 <html>
