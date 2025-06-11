@@ -103,7 +103,6 @@ def filter_dataframe(df: pd.DataFrame, coll=[]) -> pd.DataFrame:
 
 def updatedb(sql):
     try:
-        st.dialog('Test')
         subprocess.check_output(['cp', 'cowboys.db', 'cowboysgh.db'])
         connection = sqlite3.connect('cowboys.db')
         cursor = connection.cursor()
@@ -135,8 +134,8 @@ def updatedb(sql):
                     binary_file.write(base64.b64decode(contents.content))
     except Exception as e:
         print(getattr(e, 'message', str(e)))
-        st.dialog(getattr(e, 'message', str(e)))
-
+        @st.dialog(getattr(e, 'message', str(e)))
+    
 page = st.query_params.get_all('page')
 if len(page)==0:
     page.append('sellers')
