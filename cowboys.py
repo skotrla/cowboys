@@ -230,7 +230,7 @@ match page[0]:
         areas = pd.read_sql(f'SELECT Area,Description as Sections FROM areas',connection)        
         if hash[0] != hashlib.sha256((user[0]+st.secrets['MYKEY']).encode()).hexdigest() or s != 'Y':
             sql1 = f'SELECT Game, Area, Seller, Max(Last_Update) as Last_Update FROM sellers GROUP BY Game, Area, Seller'
-            sql2 = f'SELECT t1.Game, t1. Area, t2.Min_Qty, t2.Max_Qty, t2."Low_Price(ea)", t2."High_Price(ea)", t2.Parking_Included, t2.Details, t1.Seller, t3.Contact, t1.Last_Update FROM ({sql1}) t1 LEFT JOIN sellers t2 ON t1.Last_Update=t2.Last_Update AND t1.Game=t2.Game AND t1.Area=t2.Area AND t1.Seller=t2.Seller LEFT JOIN users t3 ON t2.Seller=t3.Name WHERE t2.Min_Qty > 0'
+            sql2 = f'SELECT t1.Game, t1. Area, t2.Min_Qty, t2.Max_Qty, t2."Low_Price(ea)", t2."High_Price(ea)", t2.Parking_Included, t2.Details, t1.Seller, t3.Contact, t1.Last_Update FROM ({sql1}) t1 LEFT JOIN sellers t2 ON t1.Last_Update=t2.Last_Update AND t1.Game=t2.Game AND t1.Area=t2.Area AND t1.Seller=t2.Seller LEFT JOIN users t3 ON t2.Seller=t3.Name WHERE t2.Min_Qty > 0 ORDER BY t2."Low_Price(ea)"'
             sellers = pd.read_sql(sql2,connection)
             connection.close()
             with st.sidebar.expander('Areas'):
@@ -247,7 +247,7 @@ match page[0]:
                                                                  'Contact':st.column_config.LinkColumn()})
         else:
             sql1 = f'SELECT Game, Area, Seller, Max(Last_Update) as Last_Update FROM sellers GROUP BY Game, Area, Seller'
-            sql2 = f'SELECT t1.Game, t1. Area, t2.Min_Qty, t2.Max_Qty, t2."Low_Price(ea)", t2."High_Price(ea)", t2.Parking_Included, t2.Details, t1.Last_Update FROM ({sql1}) t1 LEFT JOIN sellers t2 ON t1.Last_Update=t2.Last_Update AND t1.Game=t2.Game AND t1.Area=t2.Area AND t1.Seller=t2.Seller LEFT JOIN users t3 ON t2.Seller=t3.Name WHERE SUBSTR(t3.Contact,14,100) = "{user[0]}" AND t2.Min_Qty > 0'
+            sql2 = f'SELECT t1.Game, t1. Area, t2.Min_Qty, t2.Max_Qty, t2."Low_Price(ea)", t2."High_Price(ea)", t2.Parking_Included, t2.Details, t1.Last_Update FROM ({sql1}) t1 LEFT JOIN sellers t2 ON t1.Last_Update=t2.Last_Update AND t1.Game=t2.Game AND t1.Area=t2.Area AND t1.Seller=t2.Seller LEFT JOIN users t3 ON t2.Seller=t3.Name WHERE SUBSTR(t3.Contact,14,100) = "{user[0]}" AND t2.Min_Qty > 0 ORDER BY t2."Low_Price(ea)"'
             sellers = pd.read_sql(sql2,connection)
             connection.close()
             with st.sidebar.expander('Areas'):
@@ -318,7 +318,7 @@ match page[0]:
         areas = pd.read_sql(f'SELECT Area,Description as Sections FROM areas',connection)        
         if hash[0] != hashlib.sha256((user[0]+st.secrets['MYKEY']).encode()).hexdigest():
             sql1 = f'SELECT Game, Area, Buyer, Max(Last_Update) as Last_Update FROM buyers GROUP BY Game, Area, Buyer'
-            sql2 = f'SELECT t1.Game, t1. Area, t2.Min_Qty, t2.Max_Qty, t2."Price(ea)", t2.Parking_Included, t2.Details, t1.Buyer, t3.Contact, t1.Last_Update FROM ({sql1}) t1 LEFT JOIN buyers t2 ON t1.Last_Update=t2.Last_Update AND t1.Game=t2.Game AND t1.Area=t2.Area AND t1.Buyer=t2.Buyer LEFT JOIN users t3 ON t2.Buyer=t3.Name WHERE t2.Min_Qty > 0'
+            sql2 = f'SELECT t1.Game, t1. Area, t2.Min_Qty, t2.Max_Qty, t2."Price(ea)", t2.Parking_Included, t2.Details, t1.Buyer, t3.Contact, t1.Last_Update FROM ({sql1}) t1 LEFT JOIN buyers t2 ON t1.Last_Update=t2.Last_Update AND t1.Game=t2.Game AND t1.Area=t2.Area AND t1.Buyer=t2.Buyer LEFT JOIN users t3 ON t2.Buyer=t3.Name WHERE t2.Min_Qty > 0 ORDER BY t2."Price(ea)" DESC'
             buyers = pd.read_sql(sql2,connection)
             connection.close()
             with st.sidebar.expander('Areas'):
@@ -334,7 +334,7 @@ match page[0]:
                                                                  'Contact':st.column_config.LinkColumn()})
         else:
             sql1 = f'SELECT Game, Area, Buyer, Max(Last_Update) as Last_Update FROM buyers GROUP BY Game, Area, Buyer'
-            sql2 = f'SELECT t1.Game, t1. Area, t2.Min_Qty, t2.Max_Qty, t2."Price(ea)", t2.Parking_Included, t2.Details, t1.Last_Update FROM ({sql1}) t1 LEFT JOIN buyers t2 ON t1.Last_Update=t2.Last_Update AND t1.Game=t2.Game AND t1.Area=t2.Area AND t1.Buyer=t2.Buyer LEFT JOIN users t3 ON t2.Buyer=t3.Name WHERE SUBSTR(t3.Contact,14,100) = "{user[0]}" AND t2.Min_Qty > 0'
+            sql2 = f'SELECT t1.Game, t1. Area, t2.Min_Qty, t2.Max_Qty, t2."Price(ea)", t2.Parking_Included, t2.Details, t1.Last_Update FROM ({sql1}) t1 LEFT JOIN buyers t2 ON t1.Last_Update=t2.Last_Update AND t1.Game=t2.Game AND t1.Area=t2.Area AND t1.Buyer=t2.Buyer LEFT JOIN users t3 ON t2.Buyer=t3.Name WHERE SUBSTR(t3.Contact,14,100) = "{user[0]}" AND t2.Min_Qty > 0 ORDER BY t2."Price(ea)" DESC'
             buyers = pd.read_sql(sql2,connection)
             connection.close()
             with st.sidebar.expander('Areas'):
