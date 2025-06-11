@@ -103,6 +103,7 @@ def filter_dataframe(df: pd.DataFrame, coll=[]) -> pd.DataFrame:
 
 def updatedb(sql):
     try:
+        st.dialog('Test)
         subprocess.check_output(['cp', 'cowboys.db', 'cowboysgh.db'])
         connection = sqlite3.connect('cowboys.db')
         cursor = connection.cursor()
