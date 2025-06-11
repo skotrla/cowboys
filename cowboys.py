@@ -260,7 +260,7 @@ match page[0]:
                                                                  'Min_Qty':st.column_config.NumberColumn(label='Min Qty', format='%d'),
                                                                  'Parking_Included':st.column_config.TextColumn(label='Parking Included?')})
             form=st.sidebar.form(key='sellers')
-            last_update = str(dt.now())[:16]
+            last_update = str(dt.now())[:19]
             with form:
                 game = st.selectbox("Game",gamelist)
                 area = st.selectbox("Area",arealist)
