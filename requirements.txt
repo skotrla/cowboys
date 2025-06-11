@@ -1,3 +1,4 @@
 streamlit_js_eval
-github
+PyGithub
+
 
