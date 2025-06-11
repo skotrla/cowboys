@@ -267,7 +267,7 @@ match page[0]:
                 max_qty = st.number_input("Max Qty",min_value=0,value=0,step=1)
                 low_price = st.number_input("Low Price (ea)",min_value=0, value=0,step=1)
                 high_price = st.number_input("High Price (ea)",min_value=0, value=0,step=1)
-                parking_included = st.selectbox("Parking Included?",['Y','N'])
+                parking_included = st.selectbox("Parking Included?",['N','Y'])
                 details = st.text_input("Details",value='')
                 submit = st.form_submit_button("Submit")
                 if submit:        
