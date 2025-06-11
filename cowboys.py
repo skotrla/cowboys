@@ -326,8 +326,8 @@ match page[0]:
                     #if len(details.value) > 0:
                     updatedb(f'INSERT INTO sellers (Game, Area, Min_Qty, Max_Qty, "Low_Price(ea)", "High_Price(ea)", Parking_Included, Details, Seller, Last_Update) VALUES ("{game}","{area}","{min_qty}","{mq}","{low_price}","{hp}","{parking_included[0]}","{details}","{seller}","{last_update}")')
                     #else:
-                        #st.write('No Submit')        
-case 'buyers':
+                        #st.write('No Submit')
+    case 'buyers':
         st.markdown("""
                 <html>
                 <style>
