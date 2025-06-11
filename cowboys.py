@@ -132,6 +132,7 @@ def updatedb(sql):
                 subprocess.check_output(['rm', 'cowboysgh.db'])
                 with open('cowboysgh.db', 'wb') as binary_file:
                     binary_file.write(base64.b64decode(contents.content))
+        streamlit_js_eval(js_expressions="parent.window.location.reload()")
     except Exception as e:
         st.write(getattr(e, 'message', str(e)))
 
