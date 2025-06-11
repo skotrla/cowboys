@@ -237,8 +237,9 @@ match page[0]:
                 c1 = st.container()
                 c1.dataframe(areas,hide_index=True)
             c2 = st.container()
-            c2.markdown(f'<a href="https://www.facebook.com/groups/1041799047402614">Facebook Group</a>',unsafe_allow_html=True)
-            c2.markdown(f'<a target="_self" href="?page=buyers">Buyers</a>',unsafe_allow_html=True)
+            html = f'<a href="https://www.facebook.com/groups/1041799047402614">Facebook Group</a>'
+            html += f' <a target="_self" href="?page=buyers">Buyers</a>'
+            c2.markdown(html,unsafe_allow_html=True)
             c2.title('Sellers')
             c2.dataframe(filter_dataframe(sellers,sellers.columns.tolist()),hide_index=True, column_config={'Low_Price(ea)':st.column_config.NumberColumn(label='Low Price (ea)', format='$%d'),
                                                                  'High_Price(ea)':st.column_config.NumberColumn(label='High Price (ea)', format='$%d'),
@@ -255,8 +256,9 @@ match page[0]:
                 c1 = st.container()
                 c1.dataframe(areas,hide_index=True)
             c2 = st.container()
-            c2.markdown(f'<a href="https://www.facebook.com/groups/1041799047402614">Facebook Group</a>',unsafe_allow_html=True)
-            c2.markdown(f'<a target="_self" href="?page=buyers&user={user[0]}&hash={hash[0]}">Buyers</a>',unsafe_allow_html=True)
+            html = f'<a href="https://www.facebook.com/groups/1041799047402614">Facebook Group</a>'
+            html += f' <a target="_self" href="?page=buyers&user={user[0]}&hash={hash[0]}">Buyers</a>'
+            c2.markdown(html,unsafe_allow_html=True)
             c2.title(f'Seller = {seller}')
             c2.dataframe(filter_dataframe(sellers,sellers.columns.tolist()),hide_index=True, column_config={'Low_Price(ea)':st.column_config.NumberColumn(label='Low Price (ea)', format='$%d'),
                                                                  'High_Price(ea)':st.column_config.NumberColumn(label='High Price (ea)', format='$%d'),
@@ -327,8 +329,9 @@ match page[0]:
                 c1 = st.container()
                 c1.dataframe(areas,hide_index=True)
             c2 = st.container()
-            c2.markdown(f'<a href="https://www.facebook.com/groups/1041799047402614">Facebook Group</a>',unsafe_allow_html=True)
-            c2.markdown(f'<a target="_self" href="?page=sellers">Sellers</a>',unsafe_allow_html=True)
+            html = f'<a href="https://www.facebook.com/groups/1041799047402614">Facebook Group</a>' 
+            html += f' <a target="_self" href="?page=sellers">Sellers</a>'
+            c2.markdown(html,unsafe_allow_html=True)
             c2.title('Buyers')
             c2.dataframe(filter_dataframe(buyers,buyers.columns.tolist()),hide_index=True, column_config={'Price(ea)':st.column_config.NumberColumn(label='Price (ea)', format='$%d'),
                                                                  'Max_Qty':st.column_config.NumberColumn(label='Max Qty', format='%d'),
@@ -344,8 +347,10 @@ match page[0]:
                 c1 = st.container()
                 c1.dataframe(areas,hide_index=True)
             c2 = st.container()
-            c2.markdown(f'<a href="https://www.facebook.com/groups/1041799047402614">Facebook Group</a>',unsafe_allow_html=True)
-            c2.markdown(f'<a target="_self" href="?page=sellers&user={user[0]}&hash={hash[0]}">Sellers</a>',unsafe_allow_html=True)
+            c2 = st.container()
+            html = f'<a href="https://www.facebook.com/groups/1041799047402614">Facebook Group</a>' 
+            html += f' <a target="_self" href="?page=sellers&user={user[0]}&hash={hash[0]}">Sellers</a>'
+            c2.markdown(html,unsafe_allow_html=True)
             c2.title(f'Buyer = {buyer}')
             c2.dataframe(filter_dataframe(buyers,buyers.columns.tolist()),hide_index=True, column_config={'Price(ea)':st.column_config.NumberColumn(label='Price (ea)', format='$%d'),
                                                                  'Max_Qty':st.column_config.NumberColumn(label='Max Qty', format='%d'),
