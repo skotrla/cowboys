@@ -281,3 +281,82 @@ match page[0]:
                     else:
                         mq = max_qty
                     updatedb(f'INSERT INTO sellers (Game, Area, Min_Qty, Max_Qty, "Low_Price(ea)", "High_Price(ea)", Parking_Included, Details, Seller, Last_Update) VALUES ("{game}","{area}","{min_qty}","{mq}","{low_price}","{hp}","{parking_included[0]}","{details}","{seller}","{last_update}")')
+    case 'buyers':
+        st.markdown("""
+                <html>
+                <style>
+                        ::-webkit-scrollbar {
+                            width: 2vw;
+                            }
+
+                            /* Track */
+                            ::-webkit-scrollbar-track {
+                            background: #f1f1f1;
+                            }
+
+                            /* Handle */
+                            ::-webkit-scrollbar-thumb {
+                            background: #888;
+                            }
+
+                            /* Handle on hover */
+                            ::-webkit-scrollbar-thumb:hover {
+                            background: #555;
+                            }
+                </style>
+            """, unsafe_allow_html=True)
+        connection = sqlite3.connect('cowboys.db')
+        cursor = connection.cursor()
+        buyer = pd.read_sql(f'''SELECT * from users WHERE Contact = "{'https://m.me/' + user[0]}"''',connection)
+        if len(buyer) == 1:
+            contact = buyer['Contact'].tolist()[0]
+            buyer = buyer['Name'].tolist()[0]
+        gamelist = pd.read_sql(f'SELECT * FROM games', connection)['Game'].tolist()
+        arealist = pd.read_sql(f'SELECT * FROM areas', connection)['Area'].tolist()
+        areas = pd.read_sql(f'SELECT Area,Description as Sections FROM areas',connection)        
+        if hash[0] != hashlib.sha256((user[0]+st.secrets['MYKEY']).encode()).hexdigest():
+            sql1 = f'SELECT Game, Area, Buyer, Max(Last_Update) as Last_Update FROM buyers GROUP BY Game, Area, Buyer'
+            sql2 = f'SELECT t1.Game, t1. Area, t2.Min_Qty, t2.Max_Qty, t2."Price(ea)", t2.Parking_Included, t2.Details, t1.Buyer, t3.Contact, t1.Last_Update FROM ({sql1}) t1 LEFT JOIN buyers t2 ON t1.Last_Update=t2.Last_Update AND t1.Game=t2.Game AND t1.Area=t2.Area AND t1.Buyer=t2.Buyer LEFT JOIN users t3 ON t2.Buyer=t3.Name WHERE t2.Min_Qty > 0'
+            buyers = pd.read_sql(sql2,connection)
+            connection.close()
+            with st.sidebar.expander('Areas'):
+                c1 = st.container()
+                c1.dataframe(areas,hide_index=True)
+            c2 = st.container()
+            c2.title('Buyers')
+            c2.dataframe(filter_dataframe(buyers,buyers.columns.tolist()),hide_index=True, column_config={'Price(ea)':st.column_config.NumberColumn(label='Price (ea)', format='$%d'),
+                                                                 'Max_Qty':st.column_config.NumberColumn(label='Max Qty', format='%d'),
+                                                                 'Min_Qty':st.column_config.NumberColumn(label='Min Qty', format='%d'),
+                                                                 'Parking_Included':st.column_config.TextColumn(label='Parking Included?'),
+                                                                 'Contact':st.column_config.LinkColumn()})
+        else:
+            sql1 = f'SELECT Game, Area, Buyer, Max(Last_Update) as Last_Update FROM buyers GROUP BY Game, Area, Buyer'
+            sql2 = f'SELECT t1.Game, t1. Area, t2.Min_Qty, t2.Max_Qty, t2."Price(ea)", t2.Parking_Included, t2.Details, t1.Last_Update FROM ({sql1}) t1 LEFT JOIN buyers t2 ON t1.Last_Update=t2.Last_Update AND t1.Game=t2.Game AND t1.Area=t2.Area AND t1.Buyer=t2.Buyer LEFT JOIN users t3 ON t2.Buyer=t3.Name WHERE SUBSTR(t3.Contact,14,100) = "{user[0]}" AND t2.Min_Qty > 0'
+            buyers = pd.read_sql(sql2,connection)
+            connection.close()
+            with st.sidebar.expander('Areas'):
+                c1 = st.container()
+                c1.dataframe(areas,hide_index=True)
+            c2 = st.container()
+            c2.title(f'Buyer = {buyer}')
+            c2.dataframe(filter_dataframe(buyers,buyers.columns.tolist()),hide_index=True, column_config={'Price(ea)':st.column_config.NumberColumn(label='Price (ea)', format='$%d'),
+                                                                 'Max_Qty':st.column_config.NumberColumn(label='Max Qty', format='%d'),
+                                                                 'Min_Qty':st.column_config.NumberColumn(label='Min Qty', format='%d'),
+                                                                 'Parking_Included':st.column_config.TextColumn(label='Parking Included?')})
+            form=st.sidebar.form(key='buyers')
+            last_update = str(dt.now())[:19]
+            with form:
+                game = st.selectbox("Game",gamelist)
+                area = st.selectbox("Area",arealist)
+                min_qty = st.number_input("Min Qty",min_value=0,value=0,step=1)
+                max_qty = st.number_input("Max Qty",min_value=0,value=0,step=1)
+                price = st.number_input("Price (ea)",min_value=0, value=0,step=1)
+                parking_included = st.selectbox("Parking Included?",['N','Y'])
+                details = st.text_input("Details",value='')
+                submit = st.form_submit_button("Submit")
+                if submit:        
+                    if max_qty is None or max_qty < min_qty:
+                        mq = min_qty
+                    else:
+                        mq = max_qty
+                    updatedb(f'INSERT INTO buyers (Game, Area, Min_Qty, Max_Qty, "Price(ea)", Parking_Included, Details, Buyer, Last_Update) VALUES ("{game}","{area}","{min_qty}","{mq}","{price}","{parking_included[0]}","{details}","{buyer}","{last_update}")')
