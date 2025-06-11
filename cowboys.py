@@ -271,5 +271,9 @@ match page[0]:
                 details = st.text_input("Details")
                 submit = st.form_submit_button("Submit")
                 if submit:        
-                    updatedb(f'INSERT INTO sellers (Game, Area, Min_Qty, Max_Qty, "Low_Price(ea)", "High_Price(ea)", Parking_Included, Details, Seller, Last_Update) VALUES ("{game}","{area}","{min_qty}","{max_qty}","{low_price}","{high_price}","{parking_included[0]}","{details}","{seller}","{last_update}")')
+                    if high_price is None or high_price < low_price:
+                        hp = low_price
+                    else:
+                        hp = high_price
+                    updatedb(f'INSERT INTO sellers (Game, Area, Min_Qty, Max_Qty, "Low_Price(ea)", "High_Price(ea)", Parking_Included, Details, Seller, Last_Update) VALUES ("{game}","{area}","{min_qty}","{max_qty}","{low_price}","{hp}","{parking_included[0]}","{details}","{seller}","{last_update}")')
             st.session_state.sidebar_state = 'expanded'
