@@ -323,10 +323,13 @@ match page[0]:
                         mq = min_qty
                     else:
                         mq = max_qty
-                    if len(details) > 0:
+                    if len(details) > 0 and (min_qty == 0 or low_price > 0):
                         updatedb(f'INSERT INTO sellers (Game, Area, Min_Qty, Max_Qty, "Low_Price(ea)", "High_Price(ea)", Parking_Included, Details, Seller, Last_Update) VALUES ("{game}","{area}","{min_qty}","{mq}","{low_price}","{hp}","{parking_included[0]}","{details}","{seller}","{last_update}")')
                     else:
-                        st.sidebar.write('Details must not be blank')
+                        if len(details) > 0:
+                            st.sidebar.write('Price must be > $0')
+                        else:
+                            st.sidebar.write('Details must not be blank')                            
     case 'buyers':
         st.markdown("""
                 <html>
@@ -414,7 +417,10 @@ match page[0]:
                         mq = min_qty
                     else:
                         mq = max_qty
-                    if len(details) > 0:
+                    if len(details) > 0 and (min_qty == 0 or low_price > 0):
                         updatedb(f'INSERT INTO buyers (Game, Area, Min_Qty, Max_Qty, "Price(ea)", Parking_Included, Details, Buyer, Last_Update) VALUES ("{game}","{area}","{min_qty}","{mq}","{price}","{parking_included[0]}","{details}","{buyer}","{last_update}")')
                     else:
-                        st.sidebar.write('Details must not be blank')
+                        if len(details) > 0:
+                            st.sidebar.write('Price must be > $0')
+                        else:
+                            st.sidebar.write('Details must not be blank')                            
