@@ -218,7 +218,7 @@ match page[0]:
                 """, unsafe_allow_html=True)
             connection = sqlite3.connect('cowboys.db')
             cursor = connection.cursor()
-            users = pd.read_sql(f'SELECT Name,Contact FROM users WHERE Seller="Y"',connection)
+            users = pd.read_sql(f'SELECT Name,Contact FROM users WHERE Seller="Y" ORDER BY Name',connection)
             connection.close()
             c2 = st.container()
             html = f'<a href="https://www.facebook.com/groups/1041799047402614">Facebook Group</a>'
