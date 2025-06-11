@@ -134,6 +134,7 @@ def updatedb(sql):
                     binary_file.write(base64.b64decode(contents.content))
     except Exception as e:
         print(getattr(e, 'message', str(e)))
+        st.dialog(getattr(e, 'message', str(e)))
 
 page = st.query_params.get_all('page')
 if len(page)==0:
