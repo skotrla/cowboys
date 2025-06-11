@@ -257,6 +257,7 @@ match page[0]:
                 c1.dataframe(areas,hide_index=True)
             c2 = st.container()
             html = f'<a href="https://www.facebook.com/groups/1041799047402614">Facebook Group</a>'
+            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers">All Sellers</a>'
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers&user={user[0]}&hash={hash[0]}">Buyers</a>'
             c2.markdown(html,unsafe_allow_html=True)
             c2.title(f'Seller = {seller}')
@@ -349,6 +350,7 @@ match page[0]:
             c2 = st.container()
             c2 = st.container()
             html = f'<a href="https://www.facebook.com/groups/1041799047402614">Facebook Group</a>' 
+            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers">All Buyers</a>'
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers&user={user[0]}&hash={hash[0]}">Sellers</a>'
             c2.markdown(html,unsafe_allow_html=True)
             c2.title(f'Buyer = {buyer}')
