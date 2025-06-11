@@ -263,17 +263,21 @@ match page[0]:
             with form:
                 game = st.selectbox("Game",gamelist)
                 area = st.selectbox("Area",arealist)
-                min_qty = st.number_input("Min Qty",min_value=0,value=None,step=1)
-                max_qty = st.number_input("Max Qty",min_value=0,value=None,step=1)
-                low_price = st.number_input("Low Price (ea)",min_value=0, value=None,step=1)
-                high_price = st.number_input("High Price (ea)",min_value=0, value=None,step=1)
-                parking_included = st.text_input("Parking Included (Y/N)")
-                details = st.text_input("Details")
+                min_qty = st.number_input("Min Qty",min_value=0,value=0,step=1)
+                max_qty = st.number_input("Max Qty",min_value=0,value=0,step=1)
+                low_price = st.number_input("Low Price (ea)",min_value=0, value=0,step=1)
+                high_price = st.number_input("High Price (ea)",min_value=0, value=0,step=1)
+                parking_included = st.selectbox("Parking Included?",['Y','N'])
+                details = st.text_input("Details",value='')
                 submit = st.form_submit_button("Submit")
                 if submit:        
                     if high_price is None or high_price < low_price:
                         hp = low_price
                     else:
                         hp = high_price
-                    updatedb(f'INSERT INTO sellers (Game, Area, Min_Qty, Max_Qty, "Low_Price(ea)", "High_Price(ea)", Parking_Included, Details, Seller, Last_Update) VALUES ("{game}","{area}","{min_qty}","{max_qty}","{low_price}","{hp}","{parking_included[0]}","{details}","{seller}","{last_update}")')
+                    if max_qty is None or max_qty < min_qty:
+                        mq = min_qty
+                    else:
+                        mq = max_qty
+                    updatedb(f'INSERT INTO sellers (Game, Area, Min_Qty, Max_Qty, "Low_Price(ea)", "High_Price(ea)", Parking_Included, Details, Seller, Last_Update) VALUES ("{game}","{area}","{min_qty}","{mq}","{low_price}","{hp}","{parking_included[0]}","{details}","{seller}","{last_update}")')
             st.session_state.sidebar_state = 'expanded'
