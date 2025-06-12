@@ -43,6 +43,7 @@ fdfhtml = """
     }
     </style>
     """
+st.markdown(fdfhtml,unsafe_allow_html=True)
 
 def filter_dataframe(df: pd.DataFrame, coll=[]) -> pd.DataFrame:
     """
@@ -227,7 +228,6 @@ match page[0]:
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers">Buyers</a>'
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers">Sellers</a>'
             c2.markdown(html,unsafe_allow_html=True)
-            c2.markdown(fdfhtml,unsafe_allow_html=True)
             c2.title('VETTED Sellers')
             c2.dataframe(filter_dataframe(users,users.columns.tolist()),hide_index=True, column_config={'Contact':st.column_config.LinkColumn()})
     case 'sellers':
@@ -256,7 +256,6 @@ match page[0]:
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers">Buyers</a>'
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=users">VETTED Seller Contacts</a>'
             c2.markdown(html,unsafe_allow_html=True)
-            c2.markdown(fdfhtml,unsafe_allow_html=True)
             c2.title('Sellers')
             c2.dataframe(filter_dataframe(sellers,sellers.columns.tolist()),hide_index=True, column_config={'Low_Price(ea)':st.column_config.NumberColumn(label='Low Price (ea)', format='$%d'),
                                                                  'High_Price(ea)':st.column_config.NumberColumn(label='High Price (ea)', format='$%d'),
@@ -278,7 +277,6 @@ match page[0]:
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers">All Sellers</a>'
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers&user={user[0]}&hash={hash[0]}">Buyers</a>'
             c2.markdown(html,unsafe_allow_html=True)
-            c2.markdown(fdfhtml,unsafe_allow_html=True)
             c2.title(f'Seller = {seller}')
             ss.edited_df = c2.data_editor(filter_dataframe(sellers,sellers.columns.tolist()),hide_index=True, column_config={'Low_Price(ea)':st.column_config.NumberColumn(label='Low Price (ea)', format='$%d'),
                                                                  'High_Price(ea)':st.column_config.NumberColumn(label='High Price (ea)', format='$%d'),
@@ -345,7 +343,6 @@ match page[0]:
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers">Sellers</a>'
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=users">VETTED Seller Contacts</a>'
             c2.markdown(html,unsafe_allow_html=True)
-            c2.markdown(fdfhtml,unsafe_allow_html=True)
             c2.title('Buyers')
             c2.dataframe(filter_dataframe(buyers,buyers.columns.tolist()),hide_index=True, column_config={'Price(ea)':st.column_config.NumberColumn(label='Price (ea)', format='$%d'),
                                                                  'Max_Qty':st.column_config.NumberColumn(label='Max Qty', format='%d'),
@@ -365,7 +362,6 @@ match page[0]:
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers">All Buyers</a>'
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers&user={user[0]}&hash={hash[0]}">Sellers</a>'
             c2.markdown(html,unsafe_allow_html=True)
-            c2.markdown(fdfhtml,unsafe_allow_html=True)
             c2.title(f'Buyer = {buyer}')
             c2.dataframe(filter_dataframe(buyers,buyers.columns.tolist()),hide_index=True, column_config={'Price(ea)':st.column_config.NumberColumn(label='Price (ea)', format='$%d'),
                                                                  'Max_Qty':st.column_config.NumberColumn(label='Max Qty', format='%d'),
