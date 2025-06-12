@@ -439,7 +439,7 @@ match page[0]:
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers&user={user[0]}&hash={hash[0]}">Sellers</a>'
             c2.markdown(html,unsafe_allow_html=True)
             c2.title(f'Buyer = {buyer}')
-            ss.edited_df = c2.dataframe(filter_dataframe(buyers,buyers.columns.tolist()),hide_index=True, column_config={'Price(ea)':st.column_config.NumberColumn(label='Price (ea)', format='$%d'),
+            ss.edited_df = c2.data_editor(filter_dataframe(buyers,buyers.columns.tolist()),hide_index=True, column_config={'Price(ea)':st.column_config.NumberColumn(label='Price (ea)', format='$%d'),
                                                                  'Max_Qty':st.column_config.NumberColumn(label='Max Qty', format='%d'),
                                                                  'Min_Qty':st.column_config.NumberColumn(label='Min Qty', format='%d'),
                                                                  'Parking_Included':st.column_config.TextColumn(label='Parking Included?')})
