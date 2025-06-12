@@ -297,7 +297,7 @@ match page[0]:
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers&user={user[0]}&hash={hash[0]}">Buyers</a>'
             c2.markdown(html,unsafe_allow_html=True)
             c2.title(f'Seller = {seller}')
-            c2.dataframe(filter_dataframe(sellers,sellers.columns.tolist()),hide_index=True, column_config={'Low_Price(ea)':st.column_config.NumberColumn(label='Low Price (ea)', format='$%d'),
+            c2.data_editor(filter_dataframe(sellers,sellers.columns.tolist()),hide_index=True, column_config={'Low_Price(ea)':st.column_config.NumberColumn(label='Low Price (ea)', format='$%d'),
                                                                  'High_Price(ea)':st.column_config.NumberColumn(label='High Price (ea)', format='$%d'),
                                                                  'Max_Qty':st.column_config.NumberColumn(label='Max Qty', format='%d'),
                                                                  'Min_Qty':st.column_config.NumberColumn(label='Min Qty', format='%d'),
