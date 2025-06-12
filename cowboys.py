@@ -281,7 +281,7 @@ match page[0]:
                                                                  'Max_Qty':st.column_config.NumberColumn(label='Max Qty', format='%d'),
                                                                  'Min_Qty':st.column_config.NumberColumn(label='Min Qty', format='%d'),
                                                                  'Parking_Included':st.column_config.TextColumn(label='Parking Included?')})
-            #formd=c2.form(key='delete')
+            formd=c2.form(key='delete')
             with formd:
                 submit = st.form_submit_button("Delete Selected Rows")
                 if submit:
