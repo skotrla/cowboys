@@ -159,6 +159,7 @@ def updatedb(sql):
         streamlit_js_eval(js_expressions="parent.window.location.reload()")
     except Exception as e:
         st.write(getattr(e, 'message', str(e)))
+        st.write(sql)
 
 page = st.query_params.get_all('page')
 if len(page)==0:
