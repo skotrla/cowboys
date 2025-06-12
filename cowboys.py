@@ -130,7 +130,13 @@ def updatedb(sql):
         subprocess.check_output(['cp', 'cowboys.db', 'cowboysgh.db'])
         connection = sqlite3.connect('cowboys.db')
         cursor = connection.cursor()
-        cursor.execute(sql)
+        if sql.contains(';'):
+            sqllist = sql.split(';')
+            for i in sqllist:
+                if len(i) > 5:
+                    cursor.execute(i)
+        else:            
+            cursor.execute(sql)
         connection.commit()
         connection.close()
         token = st.secrets['TOKEN']
