@@ -311,7 +311,7 @@ match page[0]:
                     sql = ''
                     last_update = str(dt.now())[:19]
                     for index, row in ss.edited_df[ss.edited_df['Selected']==True].iterrows():
-                        sql += f'''INSERT INTO sellers (Game, Area, Min_Qty, Max_Qty, "Low_Price(ea)", "High_Price(ea)", Parking_Included, Details, Seller, Last_Update) VALUES ("{row['Game'}","{row['Area']}",0,0,"{row['Low_Price(ea)']}","{row['High_Price(ea)']}","{row['Parking_Included']}","{row['Details']}","{row['Seller']}","{last_update}");'''
+                        sql += f'''INSERT INTO sellers (Game, Area, Min_Qty, Max_Qty, "Low_Price(ea)", "High_Price(ea)", Parking_Included, Details, Seller, Last_Update) VALUES ("{row['Game']}","{row['Area']}",0,0,"{row['Low_Price(ea)']}","{row['High_Price(ea)']}","{row['Parking_Included']}","{row['Details']}","{row['Seller']}","{last_update}");'''
                     updatedb(sql)
             form=st.sidebar.form(key='sellers')
             with form:
