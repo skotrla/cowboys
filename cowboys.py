@@ -282,14 +282,22 @@ match page[0]:
                                                                  'Min_Qty':st.column_config.NumberColumn(label='Min Qty', format='%d'),
                                                                  'Parking_Included':st.column_config.TextColumn(label='Parking Included?')})
             #formd=c2.form(key='delete')
-            #with formd:
-            #    submit = st.form_submit_button("Delete Selected Rows")
-            #    if submit:
-            #        sql = ''
-            #        last_update = str(dt.now())[:19]
-            #        for index, row in ss.edited_df[ss.edited_df['Selected']==True].iterrows():
-            #            sql += f'''INSERT INTO sellers (Game, Area, Min_Qty, Max_Qty, "Low_Price(ea)", "High_Price(ea)", Parking_Included, Details, Seller, Last_Update) VALUES ("{row['Game']}","{row['Area']}",0,0,"{row['Low_Price(ea)']}","{row['High_Price(ea)']}","{row['Parking_Included']}","{row['Details']}","{seller}","{last_update}");'''
-            #        updatedb(sql)
+            with formd:
+                submit = st.form_submit_button("Delete Selected Rows")
+                if submit:
+                    sql = ''
+                    last_update = str(dt.now())[:19]
+                    for index, row in ss.edited_df[ss.edited_df['Selected']==True].iterrows():
+                        game = row['Game']
+                        area = row['Area']
+                        min_qty = 0
+                        mq = 0
+                        low_price = row['Low_Price(ea)']
+                        hp = row['High_Price(ea)']
+                        parking_included = row['Parking_Included']
+                        details = row['Details']
+                        sql += f'INSERT INTO sellers (Game, Area, Min_Qty, Max_Qty, "Low_Price(ea)", "High_Price(ea)", Parking_Included, Details, Seller, Last_Update) VALUES ("{game}","{area}",{min_qty},{mq},{low_price},{hp},"{parking_included[0]}","{details}","{seller}","{last_update}")'
+                    updatedb(sql)
             form=st.sidebar.form(key='sellers')
             with form:
                 game = st.selectbox("Game",gamelist)
