@@ -376,6 +376,7 @@ match page[0]:
                                                                  'Parking_Included':st.column_config.TextColumn(label='Parking Included?')})                
             form=st.sidebar.form(key='sellers')
             with form:
+                st.write('Add Seller Listing')
                 game = st.selectbox("Game",gamelist)
                 area = st.selectbox("Area",arealist)
                 min_qty = st.number_input("Min Qty",min_value=0,value=0,step=1)
@@ -384,7 +385,7 @@ match page[0]:
                 high_price = st.number_input("High Price (ea)",min_value=0, value=0,step=1)
                 parking_included = st.selectbox("Parking Included?",['N','Y'])
                 details = st.text_input("Details",value='')
-                submit = st.form_submit_button("Submit")
+                submit = st.form_submit_button("Add Seller Listing")
                 if submit:        
                     if high_price < low_price:
                         hp = low_price
@@ -528,6 +529,7 @@ match page[0]:
                                                                  'Parking_Included':st.column_config.TextColumn(label='Parking Included?')})                                
             form=st.sidebar.form(key='buyers')
             with form:
+                st.write('Add Buyer Listing')
                 game = st.selectbox("Game",gamelist)
                 area = st.selectbox("Area",arealist)
                 min_qty = st.number_input("Min Qty",min_value=0,value=0,step=1)
@@ -535,7 +537,7 @@ match page[0]:
                 price = st.number_input("Price (ea)",min_value=0, value=0,step=1)
                 parking_included = st.selectbox("Parking Included?",['N','Y'])
                 details = st.text_input("Details",value='')
-                submit = st.form_submit_button("Submit")
+                submit = st.form_submit_button("Add Buyer Listing")
                 if submit:        
                     if max_qty < min_qty:
                         mq = min_qty
