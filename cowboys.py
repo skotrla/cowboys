@@ -14,6 +14,7 @@ from github import Github
 import requests
 import base64
 import subprocess
+from streamlit import session_state as ss
 
 counter=0
 warnings.filterwarnings("ignore")
@@ -288,6 +289,7 @@ match page[0]:
             sql2 = f'SELECT t1.Game, t1. Area, t2.Min_Qty, t2.Max_Qty, t2."Low_Price(ea)", t2."High_Price(ea)", t2.Parking_Included, t2.Details, t1.Last_Update FROM ({sql1}) t1 LEFT JOIN sellers t2 ON t1.Last_Update=t2.Last_Update AND t1.Game=t2.Game AND t1.Area=t2.Area AND t1.Seller=t2.Seller LEFT JOIN users t3 ON t2.Seller=t3.Name WHERE SUBSTR(t3.Contact,14,100) = "{user[0]}" AND t2.Min_Qty > 0 ORDER BY t2."Low_Price(ea)"'
             sellers = pd.read_sql(sql2,connection)
             connection.close()
+            sellers.insert(0,'Selected',False)
             with st.sidebar.expander('Areas'):
                 c1 = st.container()
                 c1.dataframe(areas,hide_index=True)
@@ -297,13 +299,21 @@ match page[0]:
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers&user={user[0]}&hash={hash[0]}">Buyers</a>'
             c2.markdown(html,unsafe_allow_html=True)
             c2.title(f'Seller = {seller}')
-            c2.data_editor(filter_dataframe(sellers,sellers.columns.tolist()),hide_index=True, column_config={'Low_Price(ea)':st.column_config.NumberColumn(label='Low Price (ea)', format='$%d'),
+            ss.edited_df = c2.data_editor(filter_dataframe(sellers,sellers.columns.tolist()),hide_index=True, column_config={'Low_Price(ea)':st.column_config.NumberColumn(label='Low Price (ea)', format='$%d'),
                                                                  'High_Price(ea)':st.column_config.NumberColumn(label='High Price (ea)', format='$%d'),
                                                                  'Max_Qty':st.column_config.NumberColumn(label='Max Qty', format='%d'),
                                                                  'Min_Qty':st.column_config.NumberColumn(label='Min Qty', format='%d'),
                                                                  'Parking_Included':st.column_config.TextColumn(label='Parking Included?')})
+            formd=st.form(key='delete')
+            with formd:
+                submit = st.form_submit_button("Delete Selected Rows")
+                if submit:
+                    sql = ''
+                    last_update = str(dt.now())[:19]
+                    for index, row in ss.edited_df[ss.edited_df['Selected']==True].iterrows():
+                        sql += f'''INSERT INTO sellers (Game, Area, Min_Qty, Max_Qty, "Low_Price(ea)", "High_Price(ea)", Parking_Included, Details, Seller, Last_Update) VALUES ("{row['Game'}","{row['Area']}",0,0,"{row['Low_Price(ea)']}","{row['High_Price(ea)']}","{row['Parking_Included']}","{row['Details']}","{row['Seller']}","{last_update}");'''
+                    updatedb(sql)
             form=st.sidebar.form(key='sellers')
-            last_update = str(dt.now())[:19]
             with form:
                 game = st.selectbox("Game",gamelist)
                 area = st.selectbox("Area",arealist)
@@ -324,7 +334,8 @@ match page[0]:
                     else:
                         mq = max_qty
                     if len(details) > 0 and (min_qty == 0 or low_price > 0):
-                        updatedb(f'INSERT INTO sellers (Game, Area, Min_Qty, Max_Qty, "Low_Price(ea)", "High_Price(ea)", Parking_Included, Details, Seller, Last_Update) VALUES ("{game}","{area}","{min_qty}","{mq}","{low_price}","{hp}","{parking_included[0]}","{details}","{seller}","{last_update}")')
+                        last_update = str(dt.now())[:19]
+                        updatedb(f'INSERT INTO sellers (Game, Area, Min_Qty, Max_Qty, "Low_Price(ea)", "High_Price(ea)", Parking_Included, Details, Seller, Last_Update) VALUES ("{game}","{area}",{min_qty},{mq},{low_price},{hp},"{parking_included[0]}","{details}","{seller}","{last_update}")')
                     else:
                         if len(details) > 0:
                             st.sidebar.write('Price must be > $0')
@@ -402,7 +413,6 @@ match page[0]:
                                                                  'Min_Qty':st.column_config.NumberColumn(label='Min Qty', format='%d'),
                                                                  'Parking_Included':st.column_config.TextColumn(label='Parking Included?')})
             form=st.sidebar.form(key='buyers')
-            last_update = str(dt.now())[:19]
             with form:
                 game = st.selectbox("Game",gamelist)
                 area = st.selectbox("Area",arealist)
@@ -418,7 +428,8 @@ match page[0]:
                     else:
                         mq = max_qty
                     if len(details) > 0 and (min_qty == 0 or low_price > 0):
-                        updatedb(f'INSERT INTO buyers (Game, Area, Min_Qty, Max_Qty, "Price(ea)", Parking_Included, Details, Buyer, Last_Update) VALUES ("{game}","{area}","{min_qty}","{mq}","{price}","{parking_included[0]}","{details}","{buyer}","{last_update}")')
+                        last_update = str(dt.now())[:19]
+                        updatedb(f'INSERT INTO buyers (Game, Area, Min_Qty, Max_Qty, "Price(ea)", Parking_Included, Details, Buyer, Last_Update) VALUES ("{game}","{area}",{min_qty},{mq},{price},"{parking_included[0]}","{details}","{buyer}","{last_update}")')
                     else:
                         if len(details) > 0:
                             st.sidebar.write('Price must be > $0')
