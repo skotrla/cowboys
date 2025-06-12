@@ -319,7 +319,7 @@ match page[0]:
                         area = row['Area']
                         srow = sellers[(sellers['Game']==game) & sellers['Area']==area]
                         update = False
-                        st.write(srow)
+                        st.write(row)
                         if len(srow) == 1:
                             min_qty = row['Min_Qty']
                             mq = row['Max_Qty']
