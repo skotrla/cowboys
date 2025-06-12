@@ -20,6 +20,30 @@ counter=0
 warnings.filterwarnings("ignore")
 st.set_page_config(layout='wide',initial_sidebar_state='expanded')
 
+fdfhtml = """
+    <html>
+    <style>
+    ::-webkit-scrollbar {
+    width: 2vw;
+    }
+    
+    /* Track */
+    ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    }
+    
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+    background: #888;
+    }
+    
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+    }
+    </style>
+    """
+
 def filter_dataframe(df: pd.DataFrame, coll=[]) -> pd.DataFrame:
     """
     Adds a UI on top of a dataframe to let viewers filter columns
@@ -194,29 +218,6 @@ match page[0]:
                 if submit:        
                     updatedb(f'INSERT INTO users (Name,Contact,Seller) VALUES ("{name}","{contact}","{seller}")')
         else:
-            st.markdown("""
-                    <html>
-                    <style>
-                            ::-webkit-scrollbar {
-                                width: 2vw;
-                                }
-    
-                                /* Track */
-                                ::-webkit-scrollbar-track {
-                                background: #f1f1f1;
-                                }
-    
-                                /* Handle */
-                                ::-webkit-scrollbar-thumb {
-                                background: #888;
-                                }
-    
-                                /* Handle on hover */
-                                ::-webkit-scrollbar-thumb:hover {
-                                background: #555;
-                                }
-                    </style>
-                """, unsafe_allow_html=True)
             connection = sqlite3.connect('cowboys.db')
             cursor = connection.cursor()
             users = pd.read_sql(f'SELECT Name,Contact FROM users WHERE Seller="Y" ORDER BY Name',connection)
@@ -226,32 +227,10 @@ match page[0]:
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers">Buyers</a>'
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers">Sellers</a>'
             c2.markdown(html,unsafe_allow_html=True)
+            c2.markdown(fdfhtml,unsafe_allow_html=True)
             c2.title('VETTED Sellers')
             c2.dataframe(filter_dataframe(users,users.columns.tolist()),hide_index=True, column_config={'Contact':st.column_config.LinkColumn()})
     case 'sellers':
-        st.markdown("""
-                <html>
-                <style>
-                        ::-webkit-scrollbar {
-                            width: 2vw;
-                            }
-
-                            /* Track */
-                            ::-webkit-scrollbar-track {
-                            background: #f1f1f1;
-                            }
-
-                            /* Handle */
-                            ::-webkit-scrollbar-thumb {
-                            background: #888;
-                            }
-
-                            /* Handle on hover */
-                            ::-webkit-scrollbar-thumb:hover {
-                            background: #555;
-                            }
-                </style>
-            """, unsafe_allow_html=True)
         connection = sqlite3.connect('cowboys.db')
         cursor = connection.cursor()
         seller = pd.read_sql(f'''SELECT * from users WHERE Contact = "{'https://m.me/' + user[0]}"''',connection)
@@ -277,6 +256,7 @@ match page[0]:
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers">Buyers</a>'
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=users">VETTED Seller Contacts</a>'
             c2.markdown(html,unsafe_allow_html=True)
+            c2.markdown(fdfhtml,unsafe_allow_html=True)
             c2.title('Sellers')
             c2.dataframe(filter_dataframe(sellers,sellers.columns.tolist()),hide_index=True, column_config={'Low_Price(ea)':st.column_config.NumberColumn(label='Low Price (ea)', format='$%d'),
                                                                  'High_Price(ea)':st.column_config.NumberColumn(label='High Price (ea)', format='$%d'),
@@ -298,6 +278,7 @@ match page[0]:
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers">All Sellers</a>'
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers&user={user[0]}&hash={hash[0]}">Buyers</a>'
             c2.markdown(html,unsafe_allow_html=True)
+            c2.markdown(fdfhtml,unsafe_allow_html=True)
             c2.title(f'Seller = {seller}')
             ss.edited_df = c2.data_editor(filter_dataframe(sellers,sellers.columns.tolist()),hide_index=True, column_config={'Low_Price(ea)':st.column_config.NumberColumn(label='Low Price (ea)', format='$%d'),
                                                                  'High_Price(ea)':st.column_config.NumberColumn(label='High Price (ea)', format='$%d'),
@@ -311,7 +292,7 @@ match page[0]:
                     sql = ''
                     last_update = str(dt.now())[:19]
                     for index, row in ss.edited_df[ss.edited_df['Selected']==True].iterrows():
-                        sql += f'''INSERT INTO sellers (Game, Area, Min_Qty, Max_Qty, "Low_Price(ea)", "High_Price(ea)", Parking_Included, Details, Seller, Last_Update) VALUES ("{row['Game']}","{row['Area']}",0,0,"{row['Low_Price(ea)']}","{row['High_Price(ea)']}","{row['Parking_Included']}","{row['Details']}","{row['Seller']}","{last_update}");'''
+                        sql += f'''INSERT INTO sellers (Game, Area, Min_Qty, Max_Qty, "Low_Price(ea)", "High_Price(ea)", Parking_Included, Details, Seller, Last_Update) VALUES ("{row['Game']}","{row['Area']}",0,0,"{row['Low_Price(ea)']}","{row['High_Price(ea)']}","{row['Parking_Included']}","{row['Details']}","{seller}","{last_update}");'''
                     updatedb(sql)
             form=st.sidebar.form(key='sellers')
             with form:
@@ -342,29 +323,6 @@ match page[0]:
                         else:
                             st.sidebar.write('Details must not be blank')                            
     case 'buyers':
-        st.markdown("""
-                <html>
-                <style>
-                        ::-webkit-scrollbar {
-                            width: 2vw;
-                            }
-
-                            /* Track */
-                            ::-webkit-scrollbar-track {
-                            background: #f1f1f1;
-                            }
-
-                            /* Handle */
-                            ::-webkit-scrollbar-thumb {
-                            background: #888;
-                            }
-
-                            /* Handle on hover */
-                            ::-webkit-scrollbar-thumb:hover {
-                            background: #555;
-                            }
-                </style>
-            """, unsafe_allow_html=True)
         connection = sqlite3.connect('cowboys.db')
         cursor = connection.cursor()
         buyer = pd.read_sql(f'''SELECT * from users WHERE Contact = "{'https://m.me/' + user[0]}"''',connection)
@@ -387,6 +345,7 @@ match page[0]:
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers">Sellers</a>'
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=users">VETTED Seller Contacts</a>'
             c2.markdown(html,unsafe_allow_html=True)
+            c2.markdown(fdfhtml,unsafe_allow_html=True)
             c2.title('Buyers')
             c2.dataframe(filter_dataframe(buyers,buyers.columns.tolist()),hide_index=True, column_config={'Price(ea)':st.column_config.NumberColumn(label='Price (ea)', format='$%d'),
                                                                  'Max_Qty':st.column_config.NumberColumn(label='Max Qty', format='%d'),
@@ -402,11 +361,11 @@ match page[0]:
                 c1 = st.container()
                 c1.dataframe(areas,hide_index=True)
             c2 = st.container()
-            c2 = st.container()
             html = f'<a href="https://www.facebook.com/groups/1041799047402614">Facebook Group</a>' 
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers">All Buyers</a>'
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers&user={user[0]}&hash={hash[0]}">Sellers</a>'
             c2.markdown(html,unsafe_allow_html=True)
+            c2.markdown(fdfhtml,unsafe_allow_html=True)
             c2.title(f'Buyer = {buyer}')
             c2.dataframe(filter_dataframe(buyers,buyers.columns.tolist()),hide_index=True, column_config={'Price(ea)':st.column_config.NumberColumn(label='Price (ea)', format='$%d'),
                                                                  'Max_Qty':st.column_config.NumberColumn(label='Max Qty', format='%d'),
