@@ -130,7 +130,7 @@ def updatedb(sql):
         subprocess.check_output(['cp', 'cowboys.db', 'cowboysgh.db'])
         connection = sqlite3.connect('cowboys.db')
         cursor = connection.cursor()
-        if sql.contains(';'):
+        if sql.find(';') > 0:
             sqllist = sql.split(';')
             for i in sqllist:
                 if len(i) > 5:
