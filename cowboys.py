@@ -289,7 +289,7 @@ match page[0]:
                                                                  'Min_Qty':st.column_config.NumberColumn(label='Min Qty', format='%d'),
                                                                  'Parking_Included':st.column_config.TextColumn(label='Parking Included?')})
             formd=c2.form(key='delete')
-            with formd:
+            with formc:
                 submit = st.form_submit_button("Delete Selected Rows")
                 if submit:
                     sql = ''
@@ -308,6 +308,60 @@ match page[0]:
                         updatedb(sql)
                     else:
                         st.write('Nothing selected')
+            formc=c2.form(key='change')
+            with formc:
+                submit = st.form_submit_button("Update Changed Rows")
+                if submit:
+                    sql = ''
+                    last_update = str(dt.now())[:19]
+                    for index, row in ss.edited_df.iterrows():
+                        game = row['Game']
+                        area = row['Area']
+                        srow = sellers[(sellers['Game']==game) & sellers['Area']==area]
+                        update = False
+                        if len(srow) == 1:
+                            min_qty = row['Min_Qty']
+                            mq = row['Max_Qty']
+                            low_price = row['Low_Price(ea)']
+                            hp = row['High_Price(ea)']
+                            parking_included = row['Parking_Included']
+                            details = row['Details']
+                            if min_qty != srow['Min_Qty']:
+                                update = True
+                                if min_qty is None:
+                                    min_qty = 0
+                            if mq != srow['Max_Qty']:
+                                update = True
+                                if mq is None:
+                                    mq = min_qty
+                                else:
+                                    if mq < min_qty:
+                                        mq = min_qty
+                            if low_price != srow['Low_Price(ea)']:
+                                update = True
+                                if low_price is None:
+                                    low_price = 0
+                            if hp != srow['High_Price(ea)']:
+                                update = True
+                                if hp is None:
+                                    hp = low_price
+                                else:
+                                     if hp < low_price:
+                                        hp = low_price         
+                            if parking_included != srow['Parking_Included']:
+                                update = True
+                                if parking_included != 'Y':
+                                    parking_included = 'N'
+                            if details != srow['Details']:
+                                update = True
+                                if len(details) == 0:
+                                    details = ' '
+                            if update:
+                                sql += f'INSERT INTO sellers (Game, Area, Min_Qty, Max_Qty, "Low_Price(ea)", "High_Price(ea)", Parking_Included, Details, Seller, Last_Update) VALUES ("{game}","{area}",{min_qty},{mq},{low_price},{hp},"{parking_included[0]}","{details}","{seller}","{last_update}");'
+                    if len(sql) > 1:
+                        updatedb(sql)
+                    else:
+                        st.write('No changes')
             form=st.sidebar.form(key='sellers')
             with form:
                 game = st.selectbox("Game",gamelist)
@@ -320,11 +374,11 @@ match page[0]:
                 details = st.text_input("Details",value='')
                 submit = st.form_submit_button("Submit")
                 if submit:        
-                    if high_price is None or high_price < low_price:
+                    if high_price < low_price:
                         hp = low_price
                     else:
                         hp = high_price
-                    if max_qty is None or max_qty < min_qty:
+                    if max_qty < min_qty:
                         mq = min_qty
                     else:
                         mq = max_qty
@@ -394,7 +448,7 @@ match page[0]:
                 details = st.text_input("Details",value='')
                 submit = st.form_submit_button("Submit")
                 if submit:        
-                    if max_qty is None or max_qty < min_qty:
+                    if max_qty < min_qty:
                         mq = min_qty
                     else:
                         mq = max_qty
