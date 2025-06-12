@@ -356,7 +356,7 @@ match page[0]:
                                 update = True
                                 if len(details) == 0:
                                     details = ' '
-                            if update:
+                            if update and (min_qty == 0 or low_price > 0):
                                 sql += f'INSERT INTO sellers (Game, Area, Min_Qty, Max_Qty, "Low_Price(ea)", "High_Price(ea)", Parking_Included, Details, Seller, Last_Update) VALUES ("{game}","{area}",{min_qty},{mq},{low_price},{hp},"{parking_included[0]}","{details}","{seller}","{last_update}");'
                         else:
                             if len(srow) > 1:
@@ -438,10 +438,80 @@ match page[0]:
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers&user={user[0]}&hash={hash[0]}">Sellers</a>'
             c2.markdown(html,unsafe_allow_html=True)
             c2.title(f'Buyer = {buyer}')
-            c2.dataframe(filter_dataframe(buyers,buyers.columns.tolist()),hide_index=True, column_config={'Price(ea)':st.column_config.NumberColumn(label='Price (ea)', format='$%d'),
+            ss.edited_df = c2.dataframe(filter_dataframe(buyers,buyers.columns.tolist()),hide_index=True, column_config={'Price(ea)':st.column_config.NumberColumn(label='Price (ea)', format='$%d'),
                                                                  'Max_Qty':st.column_config.NumberColumn(label='Max Qty', format='%d'),
                                                                  'Min_Qty':st.column_config.NumberColumn(label='Min Qty', format='%d'),
                                                                  'Parking_Included':st.column_config.TextColumn(label='Parking Included?')})
+            formd=c2.form(key='delete')
+            with formd:
+                submit = st.form_submit_button("Delete Selected Rows")
+                if submit:
+                    sql = ''
+                    last_update = str(dt.now())[:19]
+                    for index, row in ss.edited_df[ss.edited_df['Selected']==True].iterrows():
+                        game = row['Game']
+                        area = row['Area']
+                        min_qty = 0
+                        mq = 0
+                        price = row['Price(ea)']
+                        parking_included = row['Parking_Included']
+                        details = row['Details']
+                        sql += f'INSERT INTO buyers (Game, Area, Min_Qty, Max_Qty, "Price(ea)", Parking_Included, Details, Buyer, Last_Update) VALUES ("{game}","{area}",{min_qty},{mq},{price},"{parking_included[0]}","{details}","{buyer}","{last_update}");'
+                    if len(sql) > 1:
+                        updatedb(sql)
+                    else:
+                        st.write('Nothing selected')
+            formc=c2.form(key='change')
+            with formc:
+                submit = st.form_submit_button("Update Changed Rows")
+                if submit:
+                    sql = ''
+                    last_update = str(dt.now())[:19]
+                    for index, row in ss.edited_df.iterrows():
+                        game = row['Game']
+                        area = row['Area']
+                        srow = buyers[(buyers['Game']==game) & (buyers['Area']==area)]
+                        update = False
+                        if len(srow) == 1:
+                            min_qty = row['Min_Qty']
+                            mq = row['Max_Qty']
+                            price = row['Price(ea)']
+                            parking_included = row['Parking_Included']
+                            details = row['Details']
+                            if min_qty != srow['Min_Qty'].tolist()[0]:
+                                update = True
+                                if min_qty is None:
+                                    min_qty = 0
+                            if mq != srow['Max_Qty'].tolist()[0]:
+                                update = True
+                                if mq is None:
+                                    mq = min_qty
+                                else:
+                                    if mq < min_qty:
+                                        mq = min_qty
+                            if price != srow['Price(ea)'].tolist()[0]:
+                                update = True
+                                if price is None:
+                                    price = 0
+                            if parking_included != srow['Parking_Included'].tolist()[0]:
+                                update = True
+                                if parking_included != 'Y':
+                                    parking_included = 'N'
+                            if details != srow['Details'].tolist()[0]:
+                                update = True
+                                if len(details) == 0:
+                                    details = ' '
+                            if update and (min_qty == 0 or price > 0):
+                                sql += f'INSERT INTO buyers (Game, Area, Min_Qty, Max_Qty, "Price(ea)", Parking_Included, Details, Buyer, Last_Update) VALUES ("{game}","{area}",{min_qty},{mq},{price},"{parking_included[0]}","{details}","{buyer}","{last_update}");'
+                        else:
+                            if len(srow) > 1:
+                                st.write('Duplicate rows found')
+                            if len(srow) == 0:
+                                st.write('No rows found')                            
+                    if len(sql) > 1:
+                        updatedb(sql)
+                    else:
+                        st.write('No changes')
             form=st.sidebar.form(key='buyers')
             with form:
                 game = st.selectbox("Game",gamelist)
@@ -457,7 +527,7 @@ match page[0]:
                         mq = min_qty
                     else:
                         mq = max_qty
-                    if len(details) > 0 and (min_qty == 0 or low_price > 0):
+                    if len(details) > 0 and (min_qty == 0 or price > 0):
                         last_update = str(dt.now())[:19]
                         updatedb(f'INSERT INTO buyers (Game, Area, Min_Qty, Max_Qty, "Price(ea)", Parking_Included, Details, Buyer, Last_Update) VALUES ("{game}","{area}",{min_qty},{mq},{price},"{parking_included[0]}","{details}","{buyer}","{last_update}")')
                     else:
