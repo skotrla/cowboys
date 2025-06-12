@@ -317,9 +317,9 @@ match page[0]:
                     for index, row in ss.edited_df.iterrows():
                         game = row['Game']
                         area = row['Area']
-                        srow = sellers[(sellers['Game']==game) & sellers['Area']==area]
+                        srow = sellers[(sellers['Game']==game) & (sellers['Area']==area)]
                         update = False
-                        st.write(row)
+                        st.write(srow)
                         if len(srow) == 1:
                             min_qty = row['Min_Qty']
                             mq = row['Max_Qty']
