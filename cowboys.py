@@ -361,7 +361,7 @@ match page[0]:
                         else:
                             if len(srow) > 1:
                                 st.write('Duplicate rows found')
-                            if len(srow) == 0"
+                            if len(srow) == 0:
                                 st.write('No rows found')                            
                     if len(sql) > 1:
                         updatedb(sql)
