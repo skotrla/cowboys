@@ -319,7 +319,6 @@ match page[0]:
                         area = row['Area']
                         srow = sellers[(sellers['Game']==game) & (sellers['Area']==area)]
                         update = False
-                        st.write(srow)
                         if len(srow) == 1:
                             min_qty = row['Min_Qty']
                             mq = row['Max_Qty']
@@ -327,38 +326,43 @@ match page[0]:
                             hp = row['High_Price(ea)']
                             parking_included = row['Parking_Included']
                             details = row['Details']
-                            if min_qty != srow['Min_Qty']:
+                            if min_qty != srow['Min_Qty'].tolist()[0]:
                                 update = True
                                 if min_qty is None:
                                     min_qty = 0
-                            if mq != srow['Max_Qty']:
+                            if mq != srow['Max_Qty'].tolist()[0]:
                                 update = True
                                 if mq is None:
                                     mq = min_qty
                                 else:
                                     if mq < min_qty:
                                         mq = min_qty
-                            if low_price != srow['Low_Price(ea)']:
+                            if low_price != srow['Low_Price(ea)'].tolist()[0]:
                                 update = True
                                 if low_price is None:
                                     low_price = 0
-                            if hp != srow['High_Price(ea)']:
+                            if hp != srow['High_Price(ea)'].tolist()[0]:
                                 update = True
                                 if hp is None:
                                     hp = low_price
                                 else:
                                      if hp < low_price:
                                         hp = low_price         
-                            if parking_included != srow['Parking_Included']:
+                            if parking_included != srow['Parking_Included'].tolist()[0]:
                                 update = True
                                 if parking_included != 'Y':
                                     parking_included = 'N'
-                            if details != srow['Details']:
+                            if details != srow['Details'].tolist()[0]:
                                 update = True
                                 if len(details) == 0:
                                     details = ' '
                             if update:
                                 sql += f'INSERT INTO sellers (Game, Area, Min_Qty, Max_Qty, "Low_Price(ea)", "High_Price(ea)", Parking_Included, Details, Seller, Last_Update) VALUES ("{game}","{area}",{min_qty},{mq},{low_price},{hp},"{parking_included[0]}","{details}","{seller}","{last_update}");'
+                        else:
+                            if len(srow) > 1:
+                                st.write('Duplicate rows found')
+                            if len(srow) == 0"
+                                st.write('No rows found')                            
                     if len(sql) > 1:
                         updatedb(sql)
                     else:
