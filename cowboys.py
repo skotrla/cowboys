@@ -133,7 +133,7 @@ def updatedb(sql):
         if sql.find(';') > 0:
             sqllist = sql.split(';')
             for i in sqllist:
-                if len(i) > 5:
+                if len(i) > 1:
                     cursor.execute(i)
         else:            
             cursor.execute(sql)
@@ -304,7 +304,10 @@ match page[0]:
                         parking_included = row['Parking_Included']
                         details = row['Details']
                         sql += f'INSERT INTO sellers (Game, Area, Min_Qty, Max_Qty, "Low_Price(ea)", "High_Price(ea)", Parking_Included, Details, Seller, Last_Update) VALUES ("{game}","{area}",{min_qty},{mq},{low_price},{hp},"{parking_included[0]}","{details}","{seller}","{last_update}");'
-                    updatedb(sql)
+                    if len(sql) > 1:
+                        updatedb(sql)
+                    else:
+                        st.write('Nothing selected')
             form=st.sidebar.form(key='sellers')
             with form:
                 game = st.selectbox("Game",gamelist)
