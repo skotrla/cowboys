@@ -327,6 +327,7 @@ match page[0]:
                                 hp = row['High_Price(ea)']
                                 parking_included = row['Parking_Included']
                                 details = row['Details']
+                                st.write(details + srow['Details'].tolist()[0])
                                 if min_qty != srow['Min_Qty'].tolist()[0]:
                                     update = True
                                     if min_qty is None:
@@ -357,7 +358,6 @@ match page[0]:
                                     update = True
                                     if len(details) == 0:
                                         details = ' '
-                                    st.write(details)
                                 if update and (min_qty == 0 or low_price > 0):
                                     sql += f'INSERT INTO sellers (Game, Area, Min_Qty, Max_Qty, "Low_Price(ea)", "High_Price(ea)", Parking_Included, Details, Seller, Last_Update) VALUES ("{game}","{area}",{min_qty},{mq},{low_price},{hp},"{parking_included[0]}","{details}","{seller}","{last_update}");'
                             else:
