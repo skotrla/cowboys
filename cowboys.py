@@ -19,31 +19,29 @@ from streamlit import session_state as ss
 counter=0
 warnings.filterwarnings("ignore")
 st.set_page_config(layout='wide',initial_sidebar_state='expanded')
+st.markdown("""
+                <html>
+                <style>
+                        ::-webkit-scrollbar {
+                            width: 2vw;
+                            }
 
-fdfhtml = """
-    <html>
-    <style>
-    ::-webkit-scrollbar {
-    width: 2vw;
-    }
-    
-    /* Track */
-    ::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    }
-    
-    /* Handle */
-    ::-webkit-scrollbar-thumb {
-    background: #888;
-    }
-    
-    /* Handle on hover */
-    ::-webkit-scrollbar-thumb:hover {
-    background: #555;
-    }
-    </style>
-    """
-st.markdown(fdfhtml,unsafe_allow_html=True)
+                            /* Track */
+                            ::-webkit-scrollbar-track {
+                            background: #f1f1f1;
+                            }
+
+                            /* Handle */
+                            ::-webkit-scrollbar-thumb {
+                            background: #888;
+                            }
+
+                            /* Handle on hover */
+                            ::-webkit-scrollbar-thumb:hover {
+                            background: #555;
+                            }
+                </style>
+            """, unsafe_allow_html=True)
 
 def filter_dataframe(df: pd.DataFrame, coll=[]) -> pd.DataFrame:
     """
