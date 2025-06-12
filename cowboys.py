@@ -376,7 +376,7 @@ match page[0]:
                                                                  'Parking_Included':st.column_config.TextColumn(label='Parking Included?')})                
             form=st.sidebar.form(key='sellers')
             with form:
-                st.write('Add Seller Listing')
+                st.title('Add Seller Listing')
                 game = st.selectbox("Game",gamelist)
                 area = st.selectbox("Area",arealist)
                 min_qty = st.number_input("Min Qty",min_value=0,value=0,step=1)
@@ -529,7 +529,7 @@ match page[0]:
                                                                  'Parking_Included':st.column_config.TextColumn(label='Parking Included?')})                                
             form=st.sidebar.form(key='buyers')
             with form:
-                st.write('Add Buyer Listing')
+                st.title('Add Buyer Listing')
                 game = st.selectbox("Game",gamelist)
                 area = st.selectbox("Area",arealist)
                 min_qty = st.number_input("Min Qty",min_value=0,value=0,step=1)
