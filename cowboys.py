@@ -289,7 +289,7 @@ match page[0]:
                                                                  'Min_Qty':st.column_config.NumberColumn(label='Min Qty', format='%d'),
                                                                  'Parking_Included':st.column_config.TextColumn(label='Parking Included?')})
             formd=c2.form(key='delete')
-            with formc:
+            with formd:
                 submit = st.form_submit_button("Delete Selected Rows")
                 if submit:
                     sql = ''
