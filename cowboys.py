@@ -314,7 +314,6 @@ match page[0]:
                 with formc:
                     submit = st.form_submit_button("Update Changed Rows")
                     if submit:
-                        os.write(1,b'Test\n')
                         sql = ''
                         last_update = str(dt.now())[:19]
                         for index, row in ss.edited_df.iterrows():
@@ -368,7 +367,7 @@ match page[0]:
                                 if len(srow) == 0:
                                     st.write('No rows found')                            
                         if len(sql) > 1:
-                            updatedb(sql)
+                            #updatedb(sql)
                         else:
                             st.write('No changes')
             else:
