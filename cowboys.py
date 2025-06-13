@@ -15,6 +15,7 @@ import requests
 import base64
 import subprocess
 from streamlit import session_state as ss
+import os
 
 counter=0
 warnings.filterwarnings("ignore")
@@ -313,7 +314,7 @@ match page[0]:
                 with formc:
                     submit = st.form_submit_button("Update Changed Rows")
                     if submit:
-                        print('Test')
+                        os.write(1,'Test')
                         sql = ''
                         last_update = str(dt.now())[:19]
                         for index, row in ss.edited_df.iterrows():
