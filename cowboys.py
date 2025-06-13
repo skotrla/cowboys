@@ -168,6 +168,9 @@ def updatedb(sql):
         st.write(getattr(e, 'message', str(e)))
         st.write(sql)
 
+def stlog(logstr):
+    os.write(1,(logstr+'\n').encode())
+
 page = st.query_params.get_all('page')
 if len(page)==0:
     page.append('sellers')
@@ -328,7 +331,7 @@ match page[0]:
                                 hp = row['High_Price(ea)']
                                 parking_included = row['Parking_Included']
                                 details = row['Details']
-                                os.write((details + '     ' + srow['Details'].tolist()[0]+'\n').encode())
+                                stlog(details + '     ' + srow['Details'].tolist()[0])
                                 if min_qty != srow['Min_Qty'].tolist()[0]:
                                     update = True
                                     if min_qty is None:
