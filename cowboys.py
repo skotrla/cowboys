@@ -367,6 +367,7 @@ match page[0]:
                                 if len(srow) == 0:
                                     st.write('No rows found')                            
                         if len(sql) > 1:
+                            pass
                             #updatedb(sql)
                         else:
                             st.write('No changes')
