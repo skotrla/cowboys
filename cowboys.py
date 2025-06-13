@@ -328,7 +328,7 @@ match page[0]:
                                 hp = row['High_Price(ea)']
                                 parking_included = row['Parking_Included']
                                 details = row['Details']
-                                st.write(details + '     ' + srow['Details'].tolist()[0])
+                                os.write(b(details + '     ' + srow['Details'].tolist()[0])+'\n')
                                 if min_qty != srow['Min_Qty'].tolist()[0]:
                                     update = True
                                     if min_qty is None:
@@ -367,8 +367,7 @@ match page[0]:
                                 if len(srow) == 0:
                                     st.write('No rows found')                            
                         if len(sql) > 1:
-                            pass
-                            #updatedb(sql)
+                            updatedb(sql)
                         else:
                             st.write('No changes')
             else:
