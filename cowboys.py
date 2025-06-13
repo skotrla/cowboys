@@ -331,7 +331,8 @@ match page[0]:
                                 hp = row['High_Price(ea)']
                                 parking_included = row['Parking_Included']
                                 details = row['Details']
-                                stlog('old: '+ srow['Details'].tolist()[0] + ', new: ' + details)
+                                #stlog('old: '+ srow['Details'].tolist()[0] + ', new: ' + details)
+                                stlog('new: ' + details)
                                 if min_qty != srow['Min_Qty'].tolist()[0]:
                                     update = True
                                     if min_qty is None:
