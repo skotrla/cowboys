@@ -16,6 +16,7 @@ import base64
 import subprocess
 from streamlit import session_state as ss
 import os
+import numpy as np
 
 counter=0
 warnings.filterwarnings("ignore")
@@ -257,6 +258,11 @@ match page[0]:
             sql2 = f'SELECT t1.Game, t1. Area, t2.Min_Qty, t2.Max_Qty, t2."Low_Price(ea)", t2."High_Price(ea)", t2.Parking_Included, t2.Details, t1.Seller, t3.Contact, t1.Last_Update FROM ({sql1}) t1 LEFT JOIN sellers t2 ON t1.Last_Update=t2.Last_Update AND t1.Game=t2.Game AND t1.Area=t2.Area AND t1.Seller=t2.Seller LEFT JOIN users t3 ON t2.Seller=t3.Name WHERE t2.Min_Qty > 0 ORDER BY t2."Low_Price(ea)"'
             sellers = pd.read_sql(sql2,connection)
             connection.close()
+            sellers.insert(1,'Date', sellers['Game'].str.find('/'))
+            fdate = str(dt.now()).replace(str(dt.now().year),str(dt.now().year+1))[:10] 
+            sellers['Date'] = np.where(sellers['Date'] > 0,sellers['Game'].apply(lambda x: x[x.find('/')-2:]),fdate)
+            sellers['Date'] = pd.to_datetime(sellers['Date'],format='mixed')
+            sellers = sellers[sellers['Date']>=dt.now()]
             with st.sidebar.expander('Areas'):
                 c1 = st.container()
                 c1.dataframe(areas,hide_index=True)
@@ -422,6 +428,11 @@ match page[0]:
             sql2 = f'SELECT t1.Game, t1. Area, t2.Min_Qty, t2.Max_Qty, t2."Price(ea)", t2.Parking_Included, t2.Details, t1.Buyer, t3.Contact, t1.Last_Update FROM ({sql1}) t1 LEFT JOIN buyers t2 ON t1.Last_Update=t2.Last_Update AND t1.Game=t2.Game AND t1.Area=t2.Area AND t1.Buyer=t2.Buyer LEFT JOIN users t3 ON t2.Buyer=t3.Name WHERE t2.Min_Qty > 0 ORDER BY t2."Price(ea)" DESC'
             buyers = pd.read_sql(sql2,connection)
             connection.close()
+            buyers.insert(1,'Date', sellers['Game'].str.find('/'))
+            fdate = str(dt.now()).replace(str(dt.now().year),str(dt.now().year+1))[:10] 
+            buyers['Date'] = np.where(buyers['Date'] > 0,buyers['Game'].apply(lambda x: x[x.find('/')-2:]),fdate)
+            buyers['Date'] = pd.to_datetime(buyers['Date'],format='mixed')
+            buyers = buyers[buyers['Date']>=dt.now()]
             with st.sidebar.expander('Areas'):
                 c1 = st.container()
                 c1.dataframe(areas,hide_index=True)
@@ -555,3 +566,4 @@ match page[0]:
                             st.sidebar.write('Price must be > $0')
                         else:
                             st.sidebar.write('Details must not be blank')                            
+
