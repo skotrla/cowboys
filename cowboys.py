@@ -466,6 +466,7 @@ match page[0]:
                                                                  'Contact':st.column_config.LinkColumn()})                
             if 'name' in st.session_state:
                 c3 = st.container()
+                c3.title('Pending Listings')
                 c3.dataframe(filter_dataframe(newbuyers,newbuyers.columns.tolist()),hide_index=True)
             else:
                 form=st.sidebar.form(key='buyers')
@@ -666,7 +667,3 @@ match page[0]:
                             updatedb(sql)
                         else:
                             st.write('Nothing selected')
-
-
-
-
