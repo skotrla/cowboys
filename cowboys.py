@@ -480,10 +480,10 @@ match page[0]:
                         else:
                             mq = max_qty
                         if len(details) > 0 and (min_qty == 0 or price > 0) and len(name) > 0 and len(contact) > 0:
-                            last_update = str(dt.now())[:19]
-                            updatedb(f'INSERT INTO newbuyers (Game, Area, Min_Qty, Max_Qty, "Price(ea)", Parking_Included, Details, Buyer, Last_Update, Contact) VALUES ("{game}","{area}",{min_qty},{mq},{price},"{parking_included[0]}","{details}","{name}","{last_update}","{contact}")')
                             st.session_state.name = name
                             st.session_state.contact = contact                        
+                            last_update = str(dt.now())[:19]
+                            updatedb(f'INSERT INTO newbuyers (Game, Area, Min_Qty, Max_Qty, "Price(ea)", Parking_Included, Details, Buyer, Last_Update, Contact) VALUES ("{game}","{area}",{min_qty},{mq},{price},"{parking_included[0]}","{details}","{name}","{last_update}","{contact}")')
                             #modal = Modal(key="OK",title="Listing Added")
                             #modal.open()
                             #with modal.container():
@@ -663,6 +663,7 @@ match page[0]:
                             updatedb(sql)
                         else:
                             st.write('Nothing selected')
+
 
 
 
