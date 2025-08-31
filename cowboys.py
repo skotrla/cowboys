@@ -171,10 +171,10 @@ def updatedb(sql):
                 with open('cowboysgh.db', 'wb') as binary_file:
                     binary_file.write(base64.b64decode(contents.content))
         if sql.find('newbuyers') >= 0:
-            modal = Modal(key="OK",title="Listing Added")
-            modal.open()
-            with modal.container():
-                st.write('New User Listings Will Not Show Up Until Approved, You Will Be Sent a Login via Contact Info')
+            #modal = Modal(key="OK",title="Listing Added")
+            #modal.open()
+            #with modal.container():
+            #    st.write('New User Listings Will Not Show Up Until Approved, You Will Be Sent a Login via Contact Info')
         streamlit_js_eval(js_expressions="parent.window.location.reload()")
     except Exception as e:
         st.write(getattr(e, 'message', str(e)))
@@ -664,4 +664,5 @@ match page[0]:
                             updatedb(sql)
                         else:
                             st.write('Nothing selected')
+
 
