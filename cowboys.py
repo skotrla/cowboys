@@ -171,10 +171,10 @@ def updatedb(sql):
                 with open('cowboysgh.db', 'wb') as binary_file:
                     binary_file.write(base64.b64decode(contents.content))
         if sql.find('newbuyers') >= 0:
-            #modal = Modal(key="OK",title="Listing Added")
-            #modal.open()
-            #with modal.container():
-            #    st.write('New User Listings Will Not Show Up Until Approved, You Will Be Sent a Login via Contact Info')
+            modal = Modal(key="OK",title="Listing Added")
+            modal.open()
+            with modal.container():
+                st.write('New User Listings Will Not Show Up Until Approved, You Will Be Sent a Login via Contact Info')
         streamlit_js_eval(js_expressions="parent.window.location.reload()")
     except Exception as e:
         st.write(getattr(e, 'message', str(e)))
@@ -440,7 +440,9 @@ match page[0]:
             sql2 = f'SELECT t1.Game, t1. Area, t2.Min_Qty, t2.Max_Qty, t2."Price(ea)", t2.Parking_Included, t2.Details, t1.Buyer, t3.Contact, t1.Last_Update FROM ({sql1}) t1 LEFT JOIN buyers t2 ON t1.Last_Update=t2.Last_Update AND t1.Game=t2.Game AND t1.Area=t2.Area AND t1.Buyer=t2.Buyer LEFT JOIN users t3 ON t2.Buyer=t3.Name WHERE t2.Min_Qty > 0 ORDER BY t2."Price(ea)" DESC'
             buyers = pd.read_sql(sql2,connection)
             if 'name' in st.session_state:
-                newbuyers = pd.read_sql(f'SELECT * FROM newbuyers WHERE Buyer="{st.session_state.name}" AND Contact="{st.session_state.contact}"',connection)
+            sql1 = f'SELECT Game, Area, Buyer, Contact, Max(Last_Update) as Last_Update FROM newbuyers GROUP BY Game, Area, Buyer, Contact'
+            sql2 = f'SELECT t1.Game, t1. Area, t2.Min_Qty, t2.Max_Qty, t2."Price(ea)", t2.Parking_Included, t2.Details, t1.Buyer, t1.Contact, t1.Last_Update FROM ({sql1}) t1 LEFT JOIN newbuyers t2 ON t1.Last_Update=t2.Last_Update AND t1.Game=t2.Game AND t1.Area=t2.Area AND t1.Buyer=t2.Buyer AND t1.Contact=t2.Contact WHERE t2.Min_Qty > 0 AND t2.Buyer="{st.session_state.name}" AND t2.Contact="{st.session_state.contact}"'
+            newbuyers = pd.read_sql(sql2,connection)
             connection.close()
             buyers.insert(1,'Date', buyers['Game'].str.find('/'))
             fdate = str(dt.now()).replace(str(dt.now().year),str(dt.now().year+1))[:10] 
@@ -664,5 +666,6 @@ match page[0]:
                             updatedb(sql)
                         else:
                             st.write('Nothing selected')
+
 
 
