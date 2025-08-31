@@ -263,6 +263,7 @@ match page[0]:
             sellers['Date'] = np.where(sellers['Date'] > 0,sellers['Game'].apply(lambda x: x[x.find('/')-2:]),fdate)
             sellers['Date'] = pd.to_datetime(sellers['Date'],format='mixed')
             sellers = sellers[sellers['Date']>=dt.now()]
+            sellers['Date'] = sellers['Date'].astype('str').str[:10]
             with st.sidebar.expander('Areas'):
                 c1 = st.container()
                 c1.dataframe(areas,hide_index=True)
@@ -433,6 +434,7 @@ match page[0]:
             buyers['Date'] = np.where(buyers['Date'] > 0,buyers['Game'].apply(lambda x: x[x.find('/')-2:]),fdate)
             buyers['Date'] = pd.to_datetime(buyers['Date'],format='mixed')
             buyers = buyers[buyers['Date']>=dt.now()]
+            buyers['Date'] = buyers['Date'].astype('str').str[:10]
             with st.sidebar.expander('Areas'):
                 c1 = st.container()
                 c1.dataframe(areas,hide_index=True)
@@ -566,4 +568,5 @@ match page[0]:
                             st.sidebar.write('Price must be > $0')
                         else:
                             st.sidebar.write('Details must not be blank')                            
+
 
