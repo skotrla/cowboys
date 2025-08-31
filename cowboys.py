@@ -140,6 +140,10 @@ def updatedb(sql):
                     cursor.execute(i)
         else:            
             cursor.execute(sql)
+        dblist = pd.read_sql("SELECT name FROM sqlite_master WHERE type='table'",connection)['name'].tolist()
+        if not 'newbuyers' in dblist:
+            cursor.execute('CREATE TABLE newbuyers AS SELECT * FROM buyers WHERE 1 = 0')
+            cursor.execute('ALTER TABLE newbuyers ADD Contact TEXT')
         connection.commit()
         connection.close()
         token = st.secrets['TOKEN']
@@ -569,6 +573,7 @@ match page[0]:
                             st.sidebar.write('Price must be > $0')
                         else:
                             st.sidebar.write('Details must not be blank')                            
+
 
 
 
