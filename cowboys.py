@@ -170,6 +170,11 @@ def updatedb(sql):
                 subprocess.check_output(['rm', 'cowboysgh.db'])
                 with open('cowboysgh.db', 'wb') as binary_file:
                     binary_file.write(base64.b64decode(contents.content))
+        if sql.find('newbuyers') >= 0:
+            modal = Modal(key="OK",title="Listing Added")
+            modal.open()
+            with modal.container():
+                st.write('New User Listings Will Not Show Up Until Approved, You Will Be Sent a Login via Contact Info')
         streamlit_js_eval(js_expressions="parent.window.location.reload()")
     except Exception as e:
         st.write(getattr(e, 'message', str(e)))
@@ -484,10 +489,6 @@ match page[0]:
                             st.session_state.contact = contact                        
                             last_update = str(dt.now())[:19]
                             updatedb(f'INSERT INTO newbuyers (Game, Area, Min_Qty, Max_Qty, "Price(ea)", Parking_Included, Details, Buyer, Last_Update, Contact) VALUES ("{game}","{area}",{min_qty},{mq},{price},"{parking_included[0]}","{details}","{name}","{last_update}","{contact}")')
-                            #modal = Modal(key="OK",title="Listing Added")
-                            #modal.open()
-                            #with modal.container():
-                            #    st.write('New User Listings Will Not Show Up Until Approved, You Will Be Sent a Login via Contact Info')
                         else:
                             if price <= 0:
                                 st.sidebar.write('Price must be > $0')
@@ -663,15 +664,4 @@ match page[0]:
                             updatedb(sql)
                         else:
                             st.write('Nothing selected')
-
-
-
-
-
-
-
-
-
-
-
 
