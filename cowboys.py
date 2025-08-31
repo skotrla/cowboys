@@ -603,5 +603,50 @@ match page[0]:
                             st.sidebar.write('Price must be > $0')
                         else:
                             st.sidebar.write('Details must not be blank')                            
-
-
+    case 'newbuyers':
+        connection = sqlite3.connect('cowboys.db')
+        cursor = connection.cursor()
+        gamelist = pd.read_sql(f'SELECT * FROM games', connection)['Game'].tolist()
+        arealist = pd.read_sql(f'SELECT * FROM areas', connection)['Area'].tolist()
+        areas = pd.read_sql(f'SELECT Area,Description as Sections FROM areas',connection)        
+        if user[0] == 'scott.kotrla' and hash[0] == hashlib.sha256((user[0]+st.secrets['MYKEY']).encode()).hexdigest():
+            sql1 = f'SELECT Game, Area, Buyer, Contact, Max(Last_Update) as Last_Update FROM newbuyers GROUP BY Game, Area, Buyer, Contact'
+            sql2 = f'SELECT t1.Game, t1. Area, t2.Min_Qty, t2.Max_Qty, t2."Price(ea)", t2.Parking_Included, t2.Details, t1.Buyer, t1.Contact, t1.Last_Update FROM ({sql1}) t1 LEFT JOIN newbuyers t2 ON t1.Last_Update=t2.Last_Update AND t1.Game=t2.Game AND t1.Area=t2.Area AND t1.Buyer=t2.Buyer AND t1.Contact=t2.Contact WHERE t2.Min_Qty > 0'
+            newbuyers = pd.read_sql(sql2,connection)
+            connection.close()
+            newbuyers.insert(0,'Selected',False)
+            with st.sidebar.expander('Areas'):
+                c1 = st.container()
+                c1.dataframe(areas,hide_index=True)
+            c2 = st.container()
+            html = f'<a href="https://www.facebook.com/groups/1041799047402614">Facebook Group</a>' 
+            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers">All Buyers</a>'
+            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers&user={user[0]}&hash={hash[0]}">Sellers</a>'
+            c2.markdown(html,unsafe_allow_html=True)
+            c2.title(f'New Buyers')
+            if len(newbuyers) > 0:
+                ss.edited_df = c2.data_editor(filter_dataframe(newbuyers,newbuyers.columns.tolist()),hide_index=True, column_config={'Price(ea)':st.column_config.NumberColumn(label='Price (ea)', format='$%d'),
+                                                                 'Max_Qty':st.column_config.NumberColumn(label='Max Qty', format='%d'),
+                                                                 'Min_Qty':st.column_config.NumberColumn(label='Min Qty', format='%d'),
+                                                                 'Parking_Included':st.column_config.TextColumn(label='Parking Included?')})
+                formd=c2.form(key='delete')
+                with formd:
+                    submit = st.form_submit_button("Delete Selected Rows")
+                    if submit:
+                        sql = ''
+                        last_update = str(dt.now())[:19]
+                        for index, row in ss.edited_df[ss.edited_df['Selected']==True].iterrows():
+                            game = row['Game']
+                            area = row['Area']
+                            min_qty = 0
+                            mq = 0
+                            price = row['Price(ea)']
+                            parking_included = row['Parking_Included']
+                            details = row['Details']
+                            buyer = row['Buyer']
+                            contact = row['Contact']
+                            sql += f'INSERT INTO newbuyers (Game, Area, Min_Qty, Max_Qty, "Price(ea)", Parking_Included, Details, Buyer, Last_Update, Contact) VALUES ("{game}","{area}",{min_qty},{mq},{price},"{parking_included[0]}","{details}","{buyer}","{last_update}","{contact}");'
+                        if len(sql) > 1:
+                            updatedb(sql)
+                        else:
+                            st.write('Nothing selected')
