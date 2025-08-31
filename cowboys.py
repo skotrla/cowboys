@@ -456,9 +456,7 @@ match page[0]:
                                                                  'Contact':st.column_config.LinkColumn()})
             form=st.sidebar.form(key='buyers')
             with form:
-                st.title('Add Buyer Listing - New User')
-                st.title('Listing Will Not Show Up Until Approved')
-                st.title('You Will Be Sent a Login via Contact Info')
+                st.title('Add Buyer Listing - New User Listings Will Not Show Up Until Approved, You Will Be Sent a Login via Contact Info') 
                 game = st.selectbox("Game",gamelist)
                 area = st.selectbox("Area",arealist)
                 min_qty = st.number_input("Min Qty",min_value=0,value=0,step=1)
@@ -466,7 +464,7 @@ match page[0]:
                 price = st.number_input("Price (ea)",min_value=0, value=0,step=1)
                 parking_included = st.selectbox("Parking Included?",['N','Y'])
                 details = st.text_input("Details",value='')
-                name = st.text_input("Name",value='')
+                name = st.text_input("Full Name",value='')
                 contact  = st.text_input("Contact Info",value='')
                 submit = st.form_submit_button("Add Buyer Listing")
                 if submit:        
@@ -474,14 +472,18 @@ match page[0]:
                         mq = min_qty
                     else:
                         mq = max_qty
-                    if len(details) > 0 and (min_qty == 0 or price > 0):
+                    if len(details) > 0 and (min_qty == 0 or price > 0) and len(name) > 0 and len(contact) > 0:
                         last_update = str(dt.now())[:19]
                         updatedb(f'INSERT INTO newbuyers (Game, Area, Min_Qty, Max_Qty, "Price(ea)", Parking_Included, Details, Buyer, Last_Update, Contact) VALUES ("{game}","{area}",{min_qty},{mq},{price},"{parking_included[0]}","{details}","{name}","{last_update}","{contact}")')
                     else:
-                        if len(details) > 0:
+                        if price <= 0:
                             st.sidebar.write('Price must be > $0')
-                        else:
+                        if len(details) <= 0:
                             st.sidebar.write('Details must not be blank')                            
+                        if len(name) < 8:
+                            st.sidebar.write('Full Name must be at least 8 characters')                            
+                        if len(contact) < 8:
+                            st.sidebar.write('Contact Info must be at least 8 characters')                            
         else:
             sql1 = f'SELECT Game, Area, Buyer, Max(Last_Update) as Last_Update FROM buyers GROUP BY Game, Area, Buyer'
             sql2 = f'SELECT t1.Game, t1. Area, t2.Min_Qty, t2.Max_Qty, t2."Price(ea)", t2.Parking_Included, t2.Details, t1.Last_Update FROM ({sql1}) t1 LEFT JOIN buyers t2 ON t1.Last_Update=t2.Last_Update AND t1.Game=t2.Game AND t1.Area=t2.Area AND t1.Buyer=t2.Buyer LEFT JOIN users t3 ON t2.Buyer=t3.Name WHERE SUBSTR(t3.Contact,14,100) = "{user[0]}" AND t2.Min_Qty > 0 ORDER BY t2."Price(ea)" DESC'
@@ -601,4 +603,5 @@ match page[0]:
                             st.sidebar.write('Price must be > $0')
                         else:
                             st.sidebar.write('Details must not be blank')                            
+
 
