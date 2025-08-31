@@ -17,6 +17,7 @@ import subprocess
 from streamlit import session_state as ss
 import os
 import numpy as np
+from streamlit_modal import Modal
 
 version = '1.1'
 counter=0
@@ -475,6 +476,11 @@ match page[0]:
                     if len(details) > 0 and (min_qty == 0 or price > 0) and len(name) > 0 and len(contact) > 0:
                         last_update = str(dt.now())[:19]
                         updatedb(f'INSERT INTO newbuyers (Game, Area, Min_Qty, Max_Qty, "Price(ea)", Parking_Included, Details, Buyer, Last_Update, Contact) VALUES ("{game}","{area}",{min_qty},{mq},{price},"{parking_included[0]}","{details}","{name}","{last_update}","{contact}")')
+                        modal = Modal(key="OK",title="Listing Added")
+                        open_modal = st.button(label='button')
+                        if open_modal:
+                            with modal.container():
+                                st.markdown('New User Listings Will Not Show Up Until Approved, You Will Be Sent a Login via Contact Info')
                     else:
                         if price <= 0:
                             st.sidebar.write('Price must be > $0')
@@ -650,3 +656,4 @@ match page[0]:
                             updatedb(sql)
                         else:
                             st.write('Nothing selected')
+
