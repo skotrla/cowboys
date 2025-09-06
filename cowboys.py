@@ -276,7 +276,7 @@ def showpage(page):
                 sellers['Date'] = pd.to_datetime(sellers['Date'],format='mixed')
                 sellers = sellers[sellers['Date']>=dt.now()]
                 sellers['Date'] = sellers['Date'].astype('str').str[:10]
-                sellers = sellers.sort_values('Date')
+                sellers = sellers.sort_values(['Date','Low_Price(ea)'])
                 with st.sidebar.expander('Areas'):
                     c1 = st.container()
                     c1.dataframe(areas,hide_index=True)
@@ -465,6 +465,7 @@ def showpage(page):
                 buyers['Date'] = pd.to_datetime(buyers['Date'],format='mixed')
                 buyers = buyers[buyers['Date']>=dt.now()]
                 buyers['Date'] = buyers['Date'].astype('str').str[:10]
+                buyers = buyers.sort_values(['Date','Price(ea)'])
                 with st.sidebar.expander('Areas'):
                     c1 = st.container()
                     c1.dataframe(areas,hide_index=True)
@@ -759,4 +760,5 @@ else:
             st.session_state.hash = ''
 
 showpage(page[0])
+
 
