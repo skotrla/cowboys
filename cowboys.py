@@ -18,7 +18,7 @@ from streamlit import session_state as ss
 import os
 import numpy as np
 from streamlit_modal import Modal
-from st_cookie import cookie_manager
+import st_cookie
 
 version = '1.1'
 counter=0
@@ -201,10 +201,10 @@ if hash[0] == hashlib.sha256((user[0]+st.secrets['MYKEY']).encode()).hexdigest()
     st.session_state.user = user[0]
     st.session_state.hash = hash[0]
     st.session_state.auth = 'Y'
-    cookie_manager.update('user','hash')
+    st_cookie.update('user','hash')
 else:
     if 'user' not in st.session_state:
-        cookie_manager.load_to_session_state()
+        st_cookie.apply()
         if 'user' in st.session_state and 'hash' in st.session_state:
             if st.session_state.hash == hashlib.sha256((st.session_state.user+st.secrets['MYKEY']).encode()).hexdigest():
                 st.session_state.auth = 'Y'
@@ -732,7 +732,7 @@ match page[0]:
         st.session_state.user = ''
         st.session_state.hash = ''
         st.session_state.auth = 'N'
-        cookie_manager.update('user','hash')
+        st_cookie.update('user','hash')
         streamlit_js_eval(js_expressions="parent.window.location.href('https://cowboys.streamlit.app')")
     case 'login':
         form=st.form(key='login')
@@ -745,9 +745,8 @@ match page[0]:
                     st.session_state.user = user
                     st.session_state.hash = hash
                     st.session_state.auth = 'Y'
-                    cookie_manager.update('user','hash')
+                    st_cookie.update('user','hash')
                     streamlit_js_eval(js_expressions="parent.window.location.href('https://cowboys.streamlit.app')")
                 else:
                     st.write('Wrong password')
-
 
