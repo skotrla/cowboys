@@ -736,7 +736,7 @@ match page[0]:
         st.session_state.auth = 'N'
         st_cookie.update('user')
         st_cookie.update('hash')
-        streamlit_js_eval(js_expressions="window.location.href('https://cowboys.streamlit.app')")
+        streamlit_js_eval(js_expressions="window.location.href = 'https://cowboys.streamlit.app'")
     case 'login':
         form=st.form(key='login')
         with form:
@@ -750,9 +750,10 @@ match page[0]:
                     st.session_state.auth = 'Y'
                     st_cookie.update('user')
                     st_cookie.update('hash')
-                    streamlit_js_eval(js_expressions="window.location.href('https://cowboys.streamlit.app')")
+                    streamlit_js_eval(js_expressions="window.location.href = 'https://cowboys.streamlit.app'")
                 else:
                     st.write('Wrong password')
+
 
 
 
