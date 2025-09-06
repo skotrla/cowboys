@@ -296,7 +296,7 @@ match page[0]:
         arealist = pd.read_sql(f'SELECT * FROM areas', connection)['Area'].tolist()
         areas = pd.read_sql(f'SELECT Area,Description as Sections FROM areas',connection)        
 #        if hash[0] != hashlib.sha256((user[0]+st.secrets['MYKEY']).encode()).hexdigest() or s != 'Y':
-        if st.session_state.auth != 'Y' or s != 'Y' or a == 'N':
+        if st.session_state.auth != 'Y' or s != 'Y' or a[0] == 'N':
             sql1 = f'SELECT Game, Area, Seller, Max(Last_Update) as Last_Update FROM sellers GROUP BY Game, Area, Seller'
             sql2 = f'SELECT t1.Game, t1. Area, t2.Min_Qty, t2.Max_Qty, t2."Low_Price(ea)", t2."High_Price(ea)", t2.Parking_Included, t2.Details, t1.Seller, t3.Contact, t1.Last_Update FROM ({sql1}) t1 LEFT JOIN sellers t2 ON t1.Last_Update=t2.Last_Update AND t1.Game=t2.Game AND t1.Area=t2.Area AND t1.Seller=t2.Seller LEFT JOIN users t3 ON t2.Seller=t3.Name WHERE t2.Min_Qty > 0 ORDER BY t2."Low_Price(ea)"'
             sellers = pd.read_sql(sql2,connection)
@@ -481,7 +481,7 @@ match page[0]:
         arealist = pd.read_sql(f'SELECT * FROM areas', connection)['Area'].tolist()
         areas = pd.read_sql(f'SELECT Area,Description as Sections FROM areas',connection)        
 #        if hash[0] != hashlib.sha256((user[0]+st.secrets['MYKEY']).encode()).hexdigest():
-        if st.session_state.auth != 'Y' or a == 'N':
+        if st.session_state.auth != 'Y' or a[0] == 'N':
             sql1 = f'SELECT Game, Area, Buyer, Max(Last_Update) as Last_Update FROM buyers GROUP BY Game, Area, Buyer'
             sql2 = f'SELECT t1.Game, t1. Area, t2.Min_Qty, t2.Max_Qty, t2."Price(ea)", t2.Parking_Included, t2.Details, t1.Buyer, t3.Contact, t1.Last_Update FROM ({sql1}) t1 LEFT JOIN buyers t2 ON t1.Last_Update=t2.Last_Update AND t1.Game=t2.Game AND t1.Area=t2.Area AND t1.Buyer=t2.Buyer LEFT JOIN users t3 ON t2.Buyer=t3.Name WHERE t2.Min_Qty > 0 ORDER BY t2."Price(ea)" DESC'
             buyers = pd.read_sql(sql2,connection)
@@ -753,6 +753,7 @@ match page[0]:
                     streamlit_js_eval(js_expressions="parent.window.location.href('https://cowboys.streamlit.app')")
                 else:
                     st.write('Wrong password')
+
 
 
 
