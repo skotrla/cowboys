@@ -201,7 +201,8 @@ if hash[0] == hashlib.sha256((user[0]+st.secrets['MYKEY']).encode()).hexdigest()
     st.session_state.user = user[0]
     st.session_state.hash = hash[0]
     st.session_state.auth = 'Y'
-    st_cookie.update(['user','hash'])
+    st_cookie.update('user')
+    st_cookie.update('hash')
 else:
     if 'user' not in st.session_state:
         st_cookie.apply()
@@ -732,7 +733,8 @@ match page[0]:
         st.session_state.user = ''
         st.session_state.hash = ''
         st.session_state.auth = 'N'
-        st_cookie.update('user','hash')
+        st_cookie.update('user')
+        st_cookie.update('hash')
         streamlit_js_eval(js_expressions="parent.window.location.href('https://cowboys.streamlit.app')")
     case 'login':
         form=st.form(key='login')
@@ -745,10 +747,12 @@ match page[0]:
                     st.session_state.user = user
                     st.session_state.hash = hash
                     st.session_state.auth = 'Y'
-                    st_cookie.update(['user','hash'])
+                    st_cookie.update('user')
+                    st_cookie.update('hash')
                     streamlit_js_eval(js_expressions="parent.window.location.href('https://cowboys.streamlit.app')")
                 else:
                     st.write('Wrong password')
+
 
 
 
