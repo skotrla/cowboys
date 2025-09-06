@@ -759,6 +759,5 @@ else:
             st.session_state.user = ''
             st.session_state.hash = ''
 
+st.title('Dallas Cowboys VETTED Season Ticket Holder Marketplace Web App')
 showpage(page[0])
-
-
