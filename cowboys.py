@@ -193,7 +193,7 @@ if len(user)==0:
 hash = st.query_params.get_all('hash')
 if len(hash)==0:
     hash.append(' ')
-hash = st.query_params.get_all('auth')
+a = st.query_params.get_all('a')
 if len(a)==0:
     a.append(' ')
 
@@ -749,4 +749,5 @@ match page[0]:
                     streamlit_js_eval(js_expressions="parent.window.location.href('https://cowboys.streamlit.app')")
                 else:
                     st.write('Wrong password')
+
 
