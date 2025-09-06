@@ -18,6 +18,7 @@ from streamlit import session_state as ss
 import os
 import numpy as np
 from streamlit_modal import Modal
+from st_cookie import cookie_manager
 
 version = '1.1'
 counter=0
@@ -192,6 +193,27 @@ if len(user)==0:
 hash = st.query_params.get_all('hash')
 if len(hash)==0:
     hash.append(' ')
+hash = st.query_params.get_all('auth')
+if len(a)==0:
+    a.append(' ')
+
+if hash[0] == hashlib.sha256((user[0]+st.secrets['MYKEY']).encode()).hexdigest():
+    st.session_state.user = user[0]
+    st.session_state.hash = hash[0]
+    st.session_state.auth = 'Y'
+    cookie_manager.update('user','hash')
+else:
+    if 'user' not in st.session_state:
+        cookie_manager.load_to_session_state()
+        if 'user' in st.session_state and 'hash' in st.session_state:
+            if st.session_state.hash == hashlib.sha256((st.session_state.user+st.secrets['MYKEY']).encode()).hexdigest():
+                st.session_state.auth = 'Y'
+            else:
+                st.session_state.auth = 'N'
+        else:
+            st.session_state.auth = 'N'
+            st.session_state.user = ''
+            st.session_state.hash = ''
 
 match page[0]:
     case 'games':
@@ -201,7 +223,8 @@ match page[0]:
         connection.close()
         st.title('2025 Dallas Cowboys Games')
         st.data_editor(games,hide_index=True)
-        if user[0] == 'scott.kotrla' and hash[0] == hashlib.sha256((user[0]+st.secrets['MYKEY']).encode()).hexdigest():
+#        if user[0] == 'scott.kotrla' and hash[0] == hashlib.sha256((user[0]+st.secrets['MYKEY']).encode()).hexdigest():
+        if st.session_state.user == 'scott.kotrla' and st.session_state.auth == 'Y':
             form=st.form(key='games')
             with form:
                 name = st.text_input("Game")
@@ -215,7 +238,8 @@ match page[0]:
         connection.close()
         st.title('Dallas Cowboys Stadium Areas')
         st.data_editor(areas,hide_index=True)
-        if user[0] == 'scott.kotrla' and hash[0] == hashlib.sha256((user[0]+st.secrets['MYKEY']).encode()).hexdigest():
+#        if user[0] == 'scott.kotrla' and hash[0] == hashlib.sha256((user[0]+st.secrets['MYKEY']).encode()).hexdigest():
+        if st.session_state.user == 'scott.kotrla' and st.session_state.auth == 'Y':
             form=st.form(key='areas')
             with form:
                 name = st.text_input("Area")
@@ -224,7 +248,8 @@ match page[0]:
                 if submit:        
                     updatedb(f'INSERT INTO areas (Area,Description) VALUES ("{name}","{description}")')
     case 'users':
-        if user[0] == 'scott.kotrla' and hash[0] == hashlib.sha256((user[0]+st.secrets['MYKEY']).encode()).hexdigest():
+#        if user[0] == 'scott.kotrla' and hash[0] == hashlib.sha256((user[0]+st.secrets['MYKEY']).encode()).hexdigest():
+        if st.session_state.user == 'scott.kotrla' and st.session_state.auth == 'Y':
             connection = sqlite3.connect('cowboys.db')
             cursor = connection.cursor()
             users = pd.read_sql(f'SELECT Name,Contact,Seller FROM users',connection)
@@ -248,13 +273,18 @@ match page[0]:
             html = f'<a href="https://www.facebook.com/groups/1041799047402614">Facebook Group</a>'
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers">Buyers</a>'
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers">Sellers</a>'
+            if st.session_state.auth != 'Y':
+                html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=login">Login</a>'
+            else:
+                html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=logout">Welcome {st.session_state.user}- Click to Logout</a>'                   
             c2.markdown(html,unsafe_allow_html=True)
             c2.title('VETTED Sellers')
             c2.dataframe(filter_dataframe(users,users.columns.tolist()),hide_index=True, column_config={'Contact':st.column_config.LinkColumn()})
     case 'sellers':
         connection = sqlite3.connect('cowboys.db')
         cursor = connection.cursor()
-        seller = pd.read_sql(f'''SELECT * from users WHERE Contact = "{'https://m.me/' + user[0]}"''',connection)
+#        seller = pd.read_sql(f'''SELECT * from users WHERE Contact = "{'https://m.me/' + user[0]}"''',connection)
+        seller = pd.read_sql(f'''SELECT * from users WHERE Contact = "{'https://m.me/' + st.session_state.user}"''',connection)
         if len(seller) == 1:
             contact = seller['Contact'].tolist()[0]
             s = seller['Seller'].tolist()[0]
@@ -264,7 +294,8 @@ match page[0]:
         gamelist = pd.read_sql(f'SELECT * FROM games', connection)['Game'].tolist()
         arealist = pd.read_sql(f'SELECT * FROM areas', connection)['Area'].tolist()
         areas = pd.read_sql(f'SELECT Area,Description as Sections FROM areas',connection)        
-        if hash[0] != hashlib.sha256((user[0]+st.secrets['MYKEY']).encode()).hexdigest() or s != 'Y':
+#        if hash[0] != hashlib.sha256((user[0]+st.secrets['MYKEY']).encode()).hexdigest() or s != 'Y':
+        if st.session_state.auth != 'Y' or s != 'Y' or a == 'N':
             sql1 = f'SELECT Game, Area, Seller, Max(Last_Update) as Last_Update FROM sellers GROUP BY Game, Area, Seller'
             sql2 = f'SELECT t1.Game, t1. Area, t2.Min_Qty, t2.Max_Qty, t2."Low_Price(ea)", t2."High_Price(ea)", t2.Parking_Included, t2.Details, t1.Seller, t3.Contact, t1.Last_Update FROM ({sql1}) t1 LEFT JOIN sellers t2 ON t1.Last_Update=t2.Last_Update AND t1.Game=t2.Game AND t1.Area=t2.Area AND t1.Seller=t2.Seller LEFT JOIN users t3 ON t2.Seller=t3.Name WHERE t2.Min_Qty > 0 ORDER BY t2."Low_Price(ea)"'
             sellers = pd.read_sql(sql2,connection)
@@ -282,6 +313,10 @@ match page[0]:
             html = f'<a href="https://www.facebook.com/groups/1041799047402614">Facebook Group</a>'
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers">Buyers</a>'
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=users">VETTED Seller Contacts</a>'
+            if st.session_state.auth != 'Y':
+                html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=login">Login</a>'
+            else:
+                html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=logout">Welcome {st.session_state.user}- Click to Logout</a>'                   
             c2.markdown(html,unsafe_allow_html=True)
             c2.title('Sellers')
             c2.dataframe(filter_dataframe(sellers,sellers.columns.tolist()),hide_index=True, column_config={'Low_Price(ea)':st.column_config.NumberColumn(label='Low Price (ea)', format='$%d'),
@@ -292,7 +327,8 @@ match page[0]:
                                                                  'Contact':st.column_config.LinkColumn()})
         else:
             sql1 = f'SELECT Game, Area, Seller, Max(Last_Update) as Last_Update FROM sellers GROUP BY Game, Area, Seller'
-            sql2 = f'SELECT t1.Game, t1. Area, t2.Min_Qty, t2.Max_Qty, t2."Low_Price(ea)", t2."High_Price(ea)", t2.Parking_Included, t2.Details, t1.Last_Update FROM ({sql1}) t1 LEFT JOIN sellers t2 ON t1.Last_Update=t2.Last_Update AND t1.Game=t2.Game AND t1.Area=t2.Area AND t1.Seller=t2.Seller LEFT JOIN users t3 ON t2.Seller=t3.Name WHERE SUBSTR(t3.Contact,14,100) = "{user[0]}" AND t2.Min_Qty > 0 ORDER BY t2."Low_Price(ea)"'
+#            sql2 = f'SELECT t1.Game, t1. Area, t2.Min_Qty, t2.Max_Qty, t2."Low_Price(ea)", t2."High_Price(ea)", t2.Parking_Included, t2.Details, t1.Last_Update FROM ({sql1}) t1 LEFT JOIN sellers t2 ON t1.Last_Update=t2.Last_Update AND t1.Game=t2.Game AND t1.Area=t2.Area AND t1.Seller=t2.Seller LEFT JOIN users t3 ON t2.Seller=t3.Name WHERE SUBSTR(t3.Contact,14,100) = "{user[0]}" AND t2.Min_Qty > 0 ORDER BY t2."Low_Price(ea)"'
+            sql2 = f'SELECT t1.Game, t1. Area, t2.Min_Qty, t2.Max_Qty, t2."Low_Price(ea)", t2."High_Price(ea)", t2.Parking_Included, t2.Details, t1.Last_Update FROM ({sql1}) t1 LEFT JOIN sellers t2 ON t1.Last_Update=t2.Last_Update AND t1.Game=t2.Game AND t1.Area=t2.Area AND t1.Seller=t2.Seller LEFT JOIN users t3 ON t2.Seller=t3.Name WHERE SUBSTR(t3.Contact,14,100) = "{st.session_state.auth}" AND t2.Min_Qty > 0 ORDER BY t2."Low_Price(ea)"'
             sellers = pd.read_sql(sql2,connection)
             connection.close()
             sellers.insert(0,'Selected',False)
@@ -301,8 +337,14 @@ match page[0]:
                 c1.dataframe(areas,hide_index=True)
             c2 = st.container()
             html = f'<a href="https://www.facebook.com/groups/1041799047402614">Facebook Group</a>'
-            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers">All Sellers</a>'
-            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers&user={user[0]}&hash={hash[0]}">Buyers</a>'
+#            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers">All Sellers</a>'
+#            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers&user={user[0]}&hash={hash[0]}">Buyers</a>'
+            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers&a=N">All Sellers</a>'
+            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers">Buyers</a>'
+            if st.session_state.auth != 'Y':
+                html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=login">Login</a>'
+            else:
+                html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=logout">Welcome {st.session_state.user}- Click to Logout</a>'                   
             c2.markdown(html,unsafe_allow_html=True)
             c2.title(f'Seller = {seller}')
             if len(sellers) > 0:
@@ -428,14 +470,16 @@ match page[0]:
     case 'buyers':
         connection = sqlite3.connect('cowboys.db')
         cursor = connection.cursor()
-        buyer = pd.read_sql(f'''SELECT * from users WHERE Contact = "{'https://m.me/' + user[0]}"''',connection)
+#        buyer = pd.read_sql(f'''SELECT * from users WHERE Contact = "{'https://m.me/' + user[0]}"''',connection)
+        buyer = pd.read_sql(f'''SELECT * from users WHERE Contact = "{'https://m.me/' + st.session_state.user}"''',connection)
         if len(buyer) == 1:
             contact = buyer['Contact'].tolist()[0]
             buyer = buyer['Name'].tolist()[0]
         gamelist = pd.read_sql(f'SELECT * FROM games', connection)['Game'].tolist()
         arealist = pd.read_sql(f'SELECT * FROM areas', connection)['Area'].tolist()
         areas = pd.read_sql(f'SELECT Area,Description as Sections FROM areas',connection)        
-        if hash[0] != hashlib.sha256((user[0]+st.secrets['MYKEY']).encode()).hexdigest():
+#        if hash[0] != hashlib.sha256((user[0]+st.secrets['MYKEY']).encode()).hexdigest():
+        if st.session_state.auth != 'Y' or a == 'N':
             sql1 = f'SELECT Game, Area, Buyer, Max(Last_Update) as Last_Update FROM buyers GROUP BY Game, Area, Buyer'
             sql2 = f'SELECT t1.Game, t1. Area, t2.Min_Qty, t2.Max_Qty, t2."Price(ea)", t2.Parking_Included, t2.Details, t1.Buyer, t3.Contact, t1.Last_Update FROM ({sql1}) t1 LEFT JOIN buyers t2 ON t1.Last_Update=t2.Last_Update AND t1.Game=t2.Game AND t1.Area=t2.Area AND t1.Buyer=t2.Buyer LEFT JOIN users t3 ON t2.Buyer=t3.Name WHERE t2.Min_Qty > 0 ORDER BY t2."Price(ea)" DESC'
             buyers = pd.read_sql(sql2,connection)
@@ -457,6 +501,10 @@ match page[0]:
             html = f'<a href="https://www.facebook.com/groups/1041799047402614">Facebook Group</a>' 
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers">Sellers</a>'
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=users">VETTED Seller Contacts</a>'
+            if st.session_state.auth != 'Y':
+                html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=login">Login</a>'
+            else:
+                html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=logout">Welcome {st.session_state.user}- Click to Logout</a>'                   
             c2.markdown(html,unsafe_allow_html=True)
             c2.title('Buyers')
             c2.dataframe(filter_dataframe(buyers,buyers.columns.tolist()),hide_index=True, column_config={'Price(ea)':st.column_config.NumberColumn(label='Price (ea)', format='$%d'),
@@ -503,7 +551,7 @@ match page[0]:
                                 st.sidebar.write('Contact Info must be at least 8 characters')                            
         else:
             sql1 = f'SELECT Game, Area, Buyer, Max(Last_Update) as Last_Update FROM buyers GROUP BY Game, Area, Buyer'
-            sql2 = f'SELECT t1.Game, t1. Area, t2.Min_Qty, t2.Max_Qty, t2."Price(ea)", t2.Parking_Included, t2.Details, t1.Last_Update FROM ({sql1}) t1 LEFT JOIN buyers t2 ON t1.Last_Update=t2.Last_Update AND t1.Game=t2.Game AND t1.Area=t2.Area AND t1.Buyer=t2.Buyer LEFT JOIN users t3 ON t2.Buyer=t3.Name WHERE SUBSTR(t3.Contact,14,100) = "{user[0]}" AND t2.Min_Qty > 0 ORDER BY t2."Price(ea)" DESC'
+            sql2 = f'SELECT t1.Game, t1. Area, t2.Min_Qty, t2.Max_Qty, t2."Price(ea)", t2.Parking_Included, t2.Details, t1.Last_Update FROM ({sql1}) t1 LEFT JOIN buyers t2 ON t1.Last_Update=t2.Last_Update AND t1.Game=t2.Game AND t1.Area=t2.Area AND t1.Buyer=t2.Buyer LEFT JOIN users t3 ON t2.Buyer=t3.Name WHERE SUBSTR(t3.Contact,14,100) = "{st.session_state.user}" AND t2.Min_Qty > 0 ORDER BY t2."Price(ea)" DESC'
             buyers = pd.read_sql(sql2,connection)
             connection.close()
             buyers.insert(0,'Selected',False)
@@ -512,8 +560,14 @@ match page[0]:
                 c1.dataframe(areas,hide_index=True)
             c2 = st.container()
             html = f'<a href="https://www.facebook.com/groups/1041799047402614">Facebook Group</a>' 
-            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers">All Buyers</a>'
-            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers&user={user[0]}&hash={hash[0]}">Sellers</a>'
+#            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers">All Buyers</a>'
+#            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers&user={user[0]}&hash={hash[0]}">Sellers</a>'
+            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers&a=N">All Buyers</a>'
+            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers}">Sellers</a>'
+            if st.session_state.auth != 'Y':
+                html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=login">Login</a>'
+            else:
+                html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=logout">Welcome {st.session_state.user}- Click to Logout</a>'                   
             c2.markdown(html,unsafe_allow_html=True)
             c2.title(f'Buyer = {buyer}')
             if len(buyers) > 0:
@@ -626,7 +680,8 @@ match page[0]:
         gamelist = pd.read_sql(f'SELECT * FROM games', connection)['Game'].tolist()
         arealist = pd.read_sql(f'SELECT * FROM areas', connection)['Area'].tolist()
         areas = pd.read_sql(f'SELECT Area,Description as Sections FROM areas',connection)        
-        if user[0] == 'scott.kotrla' and hash[0] == hashlib.sha256((user[0]+st.secrets['MYKEY']).encode()).hexdigest():
+#        if user[0] == 'scott.kotrla' and hash[0] == hashlib.sha256((user[0]+st.secrets['MYKEY']).encode()).hexdigest():
+        if st.session_state.user == 'scott.kotrla' and st.session_state.auth == 'Y':
             sql1 = f'SELECT Game, Area, Buyer, Contact, Max(Last_Update) as Last_Update FROM newbuyers GROUP BY Game, Area, Buyer, Contact'
             sql2 = f'SELECT t1.Game, t1. Area, t2.Min_Qty, t2.Max_Qty, t2."Price(ea)", t2.Parking_Included, t2.Details, t1.Buyer, t1.Contact, t1.Last_Update FROM ({sql1}) t1 LEFT JOIN newbuyers t2 ON t1.Last_Update=t2.Last_Update AND t1.Game=t2.Game AND t1.Area=t2.Area AND t1.Buyer=t2.Buyer AND t1.Contact=t2.Contact WHERE t2.Min_Qty > 0'
             newbuyers = pd.read_sql(sql2,connection)
@@ -637,8 +692,14 @@ match page[0]:
                 c1.dataframe(areas,hide_index=True)
             c2 = st.container()
             html = f'<a href="https://www.facebook.com/groups/1041799047402614">Facebook Group</a>' 
-            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers">All Buyers</a>'
-            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers&user={user[0]}&hash={hash[0]}">Sellers</a>'
+#            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers">All Buyers</a>'
+#            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers&user={user[0]}&hash={hash[0]}">Sellers</a>'
+            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers">Buyers</a>'
+            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers">Sellers</a>'
+            if st.session_state.auth != 'Y':
+                html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=login">Login</a>'
+            else:
+                html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=logout">Welcome {st.session_state.user}- Click to Logout</a>'                   
             c2.markdown(html,unsafe_allow_html=True)
             c2.title(f'New Buyers')
             if len(newbuyers) > 0:
@@ -667,4 +728,25 @@ match page[0]:
                             updatedb(sql)
                         else:
                             st.write('Nothing selected')
+    case 'logout':
+        st.session_state.user = ''
+        st.session_state.hash = ''
+        st.session_state.auth = 'N'
+        cookie_manager.update('user','hash')
+        streamlit_js_eval(js_expressions="parent.window.location.href('https://cowboys.streamlit.app')")
+    case 'login':
+        form=st.form(key='login')
+        with form:
+            user = st.text_input("User ID")
+            hash = st.text_input("Password")
+            submit = st.form_submit_button("Submit")
+            if submit:
+                if hash.strip() == hashlib.sha256((user.strip()+st.secrets['MYKEY']).encode()).hexdigest():
+                    st.session_state.user = user
+                    st.session_state.hash = hash
+                    st.session_state.auth = 'Y'
+                    cookie_manager.update('user','hash')
+                    streamlit_js_eval(js_expressions="parent.window.location.href('https://cowboys.streamlit.app')")
+                else:
+                    st.write('Wrong password')
 
