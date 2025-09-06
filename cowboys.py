@@ -307,6 +307,7 @@ match page[0]:
             sellers['Date'] = pd.to_datetime(sellers['Date'],format='mixed')
             sellers = sellers[sellers['Date']>=dt.now()]
             sellers['Date'] = sellers['Date'].astype('str').str[:10]
+            sellers = sellers.sort_values('Date')
             with st.sidebar.expander('Areas'):
                 c1 = st.container()
                 c1.dataframe(areas,hide_index=True)
@@ -752,6 +753,7 @@ match page[0]:
                     streamlit_js_eval(js_expressions="parent.window.location.href('https://cowboys.streamlit.app')")
                 else:
                     st.write('Wrong password')
+
 
 
 
