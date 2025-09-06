@@ -707,6 +707,7 @@ def showpage(page):
             st_cookie.update('hash')
             showpage('sellers')
         case 'login':
+            reload = False
             form=st.form(key='login')
             with form:
                 user = st.text_input("User ID")
@@ -719,9 +720,11 @@ def showpage(page):
                         st.session_state.auth = 'Y'
                         st_cookie.update('user')
                         st_cookie.update('hash')
-                        showpage('sellers')
+                        reload = True
                     else:
                         st.write('Wrong password')
+            if reload:
+                showpage('sellers')
     
 page = st.query_params.get_all('page')
 if len(page)==0:
@@ -756,3 +759,4 @@ else:
             st.session_state.hash = ''
 
 showpage(page[0])
+
