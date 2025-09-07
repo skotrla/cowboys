@@ -740,14 +740,15 @@ a = st.query_params.get_all('a')
 if len(a)==0:
     a.append(' ')
 
+cookie = streamlit_js_eval(js_expressions="document.cookie")
+st.write(cookie)
+
 if hash[0] == hashlib.sha256((user[0]+st.secrets['MYKEY']).encode()).hexdigest():
     st.session_state.user = user[0]
     st.session_state.hash = hash[0]
     st.session_state.auth = 'Y'
     st_cookie.update('user')
     st_cookie.update('hash')
-    cookie = streamlit_js_eval(js_expressions="document.cookie")
-    st.write(cookie)
 else:
     if 'user' not in st.session_state:
         st_cookie.apply()
@@ -764,4 +765,5 @@ else:
 st.markdown('<meta name="google-site-verification" content="ofhx26YWsB4UQV4iUL8uD6ioGOJ-fmd3Aw_TM_mgyhg" />',unsafe_allow_html=True)
 st.title('Dallas Cowboys VETTED Season Ticket Holder Marketplace Web App')
 showpage(page[0])
+
 
