@@ -750,14 +750,15 @@ else:
     if 'user' not in st.session_state:
         #st_cookie.apply()
         cookie = streamlit_js_eval(js_expressions="document.cookie")
-        if cookie.find('st-cookie-user=') > -1:
-            user = cookie[cookie.find('st-cookie-user=')+len('st-cookie-user='):]
-            user = user[:user.find(';')]
-            st.session_state.user = user
-        if cookie.find('st-cookie-hash=') > -1:
-            hash = cookie[cookie.find('st-cookie-hash=')+len('st-cookie-hash='):]
-            hash = hash[:hash.find(';')]
-            st.session_state.hash = hash
+        if len(cookie) > 0:
+            if cookie.find('st-cookie-user=') > -1:
+                user = cookie[cookie.find('st-cookie-user=')+len('st-cookie-user='):]
+                user = user[:user.find(';')]
+                st.session_state.user = user
+            if cookie.find('st-cookie-hash=') > -1:
+                hash = cookie[cookie.find('st-cookie-hash=')+len('st-cookie-hash='):]
+                hash = hash[:hash.find(';')]
+                st.session_state.hash = hash
         if 'user' in st.session_state and 'hash' in st.session_state:
             if st.session_state.hash == hashlib.sha256((st.session_state.user+st.secrets['MYKEY']).encode()).hexdigest():
                 st.session_state.auth = 'Y'
@@ -771,6 +772,7 @@ else:
 st.markdown('<meta name="google-site-verification" content="ofhx26YWsB4UQV4iUL8uD6ioGOJ-fmd3Aw_TM_mgyhg" />',unsafe_allow_html=True)
 st.title('Dallas Cowboys VETTED Season Ticket Holder Marketplace Web App')
 showpage(page[0])
+
 
 
 
