@@ -771,9 +771,10 @@ else:
             st.session_state.hash = ''
 
 st.markdown('<meta name="google-site-verification" content="ofhx26YWsB4UQV4iUL8uD6ioGOJ-fmd3Aw_TM_mgyhg" />',unsafe_allow_html=True)
-#st.markdown('<img src="./app/static/giants.jpg">', unsafe_allow_html=True)
+st.markdown('<img src="./app/static/giants.jpg">', unsafe_allow_html=True)
 st.title('Dallas Cowboys VETTED Season Ticket Holder Marketplace Web App')
 showpage(page[0])
+
 
 
 
