@@ -750,8 +750,8 @@ else:
     if 'user' not in st.session_state:
         #st_cookie.apply()
         cookie = streamlit_js_eval(js_expressions="document.cookie")
-#        if cookie is not None:
-        if True:
+        if cookie is not None:
+#        if True:
             if cookie.find('st-cookie-user=') > -1:
                 user = cookie[cookie.find('st-cookie-user=')+len('st-cookie-user='):]
                 user = user[:user.find(';')]
@@ -776,6 +776,7 @@ st.markdown('''<!-- Google tag (gtag.js) --><script async src="https://www.googl
 #st.markdown('<img src="./app/static/giants.jpg">', unsafe_allow_html=True)
 st.title('Dallas Cowboys VETTED Season Ticket Holder Marketplace Web App')
 showpage(page[0])
+
 
 
 
