@@ -747,11 +747,11 @@ if hash[0] == hashlib.sha256((user[0]+st.secrets['MYKEY']).encode()).hexdigest()
     st_cookie.update('user')
     st_cookie.update('hash')
 else:
+    st_cookie.apply()
     if 'user' not in st.session_state:
-        #st_cookie.apply()
         cookie = streamlit_js_eval(js_expressions="document.cookie")
-#        if cookie is not None:
-        if True:
+        if cookie is not None:
+#        if True:
             if cookie.find('st-cookie-user=') > -1:
                 user = cookie[cookie.find('st-cookie-user=')+len('st-cookie-user='):]
                 user = user[:user.find(';')]
@@ -762,20 +762,23 @@ else:
                 hash = hash[:hash.find(';')]
                 st.session_state.hash = hash
                 st_cookie.update('hash')
-        if 'user' in st.session_state and 'hash' in st.session_state:
-            if st.session_state.hash == hashlib.sha256((st.session_state.user+st.secrets['MYKEY']).encode()).hexdigest():
-                st.session_state.auth = 'Y'
-            else:
-                st.session_state.auth = 'N'
+    if 'user' in st.session_state and 'hash' in st.session_state:
+        if st.session_state.hash == hashlib.sha256((st.session_state.user+st.secrets['MYKEY']).encode()).hexdigest():
+            st.session_state.auth = 'Y'
         else:
             st.session_state.auth = 'N'
             st.session_state.user = ''
             st.session_state.hash = ''
+    else:
+        st.session_state.auth = 'N'
+        st.session_state.user = ''
+        st.session_state.hash = ''
 
 st.markdown('''<!-- Google tag (gtag.js) --><script async src="https://www.googletagmanager.com/gtag/js?id=G-3T8LW0P2B2"></script><script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-3T8LW0P2B2');</script>''',unsafe_allow_html=True)
 #st.markdown('<img src="./app/static/giants.jpg">', unsafe_allow_html=True)
 st.title('Dallas Cowboys VETTED Season Ticket Holder Marketplace Web App')
 showpage(page[0])
+
 
 
 
