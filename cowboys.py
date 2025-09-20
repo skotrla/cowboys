@@ -4,6 +4,7 @@ import pandas as pd
 from streamlit_js_eval import streamlit_js_eval
 import hashlib
 from datetime import datetime as dt
+from datetime import timedelta as td
 import warnings
 from pandas.api.types import (
     is_categorical_dtype,
@@ -267,7 +268,7 @@ def showpage(page):
             fdate = str(dt.now()).replace(str(dt.now().year),str(dt.now().year+1))[:10] 
             games['Date'] = np.where(games['Date'] > 0,games['Game'].apply(lambda x: x[x.find('/')-2:]),fdate)
             games['Date'] = pd.to_datetime(games['Date'],format='mixed')
-            gamelist = games[games['Date']>=dt.now().date()]['Game'].tolist()
+            gamelist = games[games['Date']>=dt.now()-td(days=1)]['Game'].tolist()
             #gamelist = pd.read_sql(f'SELECT * FROM games', connection)['Game'].tolist()
             arealist = pd.read_sql(f'SELECT * FROM areas', connection)['Area'].tolist()
             areas = pd.read_sql(f'SELECT Area,Description as Sections FROM areas',connection)        
@@ -281,7 +282,7 @@ def showpage(page):
                 fdate = str(dt.now()).replace(str(dt.now().year),str(dt.now().year+1))[:10] 
                 sellers['Date'] = np.where(sellers['Date'] > 0,sellers['Game'].apply(lambda x: x[x.find('/')-2:]),fdate)
                 sellers['Date'] = pd.to_datetime(sellers['Date'],format='mixed')
-                sellers = sellers[sellers['Date']>=dt.now().date()]
+                sellers = sellers[sellers['Date']>=dt.now()-td(days=1)]
                 sellers['Date'] = sellers['Date'].astype('str').str[:10]
                 sellers = sellers.sort_values(['Date','Low_Price(ea)'])
                 with st.sidebar.expander('Areas'):
@@ -786,6 +787,7 @@ st.markdown('''<!-- Google tag (gtag.js) --><script async src="https://www.googl
 #st.markdown('<img src="./app/static/giants.jpg">', unsafe_allow_html=True)
 st.title('Dallas Cowboys VETTED Season Ticket Holder Marketplace Web App')
 showpage(page[0])
+
 
 
 
