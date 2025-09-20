@@ -261,7 +261,14 @@ def showpage(page):
                 seller = seller['Name'].tolist()[0]
             else:
                 s = 'N'
-            gamelist = pd.read_sql(f'SELECT * FROM games', connection)['Game'].tolist()
+
+            games = pd.read_sql(f'SELECT * FROM games', connection)
+            games.insert(1,'Date', games['Game'].str.find('/'))
+            fdate = str(dt.now()).replace(str(dt.now().year),str(dt.now().year+1))[:10] 
+            games['Date'] = np.where(games['Date'] > 0,games['Game'].apply(lambda x: x[x.find('/')-2:]),fdate)
+            games['Date'] = pd.to_datetime(games['Date'],format='mixed')
+            gamelist = games[games['Date']>=dt.now().date()]['Game'].tolist()
+            #gamelist = pd.read_sql(f'SELECT * FROM games', connection)['Game'].tolist()
             arealist = pd.read_sql(f'SELECT * FROM areas', connection)['Area'].tolist()
             areas = pd.read_sql(f'SELECT Area,Description as Sections FROM areas',connection)        
     #        if hash[0] != hashlib.sha256((user[0]+st.secrets['MYKEY']).encode()).hexdigest() or s != 'Y':
@@ -274,7 +281,7 @@ def showpage(page):
                 fdate = str(dt.now()).replace(str(dt.now().year),str(dt.now().year+1))[:10] 
                 sellers['Date'] = np.where(sellers['Date'] > 0,sellers['Game'].apply(lambda x: x[x.find('/')-2:]),fdate)
                 sellers['Date'] = pd.to_datetime(sellers['Date'],format='mixed')
-                sellers = sellers[sellers['Date']>=dt.now()]
+                sellers = sellers[sellers['Date']>=dt.now().date()]
                 sellers['Date'] = sellers['Date'].astype('str').str[:10]
                 sellers = sellers.sort_values(['Date','Low_Price(ea)'])
                 with st.sidebar.expander('Areas'):
@@ -779,6 +786,7 @@ st.markdown('''<!-- Google tag (gtag.js) --><script async src="https://www.googl
 #st.markdown('<img src="./app/static/giants.jpg">', unsafe_allow_html=True)
 st.title('Dallas Cowboys VETTED Season Ticket Holder Marketplace Web App')
 showpage(page[0])
+
 
 
 
