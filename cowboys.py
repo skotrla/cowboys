@@ -222,6 +222,7 @@ def showpage(page):
             cursor = connection.cursor()
             games = pd.read_sql(f'SELECT Game FROM games',connection)
             connection.close()
+            st.markdown(menu('games'),unsafe_allow_html=True)
             st.title('2025 Dallas Cowboys Games')
             st.data_editor(games,hide_index=True)
     #        if user[0] == 'scott.kotrla' and hash[0] == hashlib.sha256((user[0]+st.secrets['MYKEY']).encode()).hexdigest():
@@ -237,6 +238,7 @@ def showpage(page):
             cursor = connection.cursor()
             areas = pd.read_sql(f'SELECT Area,Description FROM areas',connection)
             connection.close()
+            st.markdown(menu('areas'),unsafe_allow_html=True)
             st.title('Dallas Cowboys Stadium Areas')
             st.data_editor(areas,hide_index=True)
     #        if user[0] == 'scott.kotrla' and hash[0] == hashlib.sha256((user[0]+st.secrets['MYKEY']).encode()).hexdigest():
@@ -255,6 +257,7 @@ def showpage(page):
                 cursor = connection.cursor()
                 users = pd.read_sql(f'SELECT Name,Contact,Seller FROM users',connection)
                 connection.close()
+                st.markdown(menu('users'),unsafe_allow_html=True)
                 st.title('Users')
                 st.data_editor(users,hide_index=True)
                 form=st.form(key='users')
@@ -777,6 +780,7 @@ st.markdown('''<!-- Google tag (gtag.js) --><script async src="https://www.googl
 #st.markdown('<img src="./app/static/giants.jpg">', unsafe_allow_html=True)
 st.title('Dallas Cowboys VETTED Season Ticket Holder Marketplace Web App')
 showpage(page[0])
+
 
 
 
