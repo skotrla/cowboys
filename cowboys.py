@@ -712,7 +712,8 @@ def showpage(page):
                         st.session_state.user = user
                         st.session_state.hash = hash
                         st.session_state.auth = 'Y'
-                        setcookie = f'const d = new Date(); d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000)); const expires = "expires=" + d.toUTCString(); document.cookie = "cowboys={st.session_state.user + '&' + st.session_state.hash};" + expires + ";path=/";'
+                        #setcookie = f'const d = new Date(); d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000)); const expires = "expires=" + d.toUTCString(); document.cookie = "cowboys={st.session_state.user + '&' + st.session_state.hash};" + expires + ";path=/";'
+                        setcookie = f'const d = new Date(); d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000)); const expires = "expires=" + d.toUTCString(); document.cookie = "cowboys={st.session_state.user + '&' + st.session_state.hash};" + expires'
                         streamlit_js_eval(js_expressions=setcookie)
                         reload = True
                     else:
@@ -739,7 +740,8 @@ if hash[0] == hashlib.sha256((user[0]+st.secrets['MYKEY']).encode()).hexdigest()
     st.session_state.auth = 'Y'
     #st_cookie.update('user')
     #st_cookie.update('hash')
-    setcookie = f'const d = new Date(); d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000)); const expires = "expires=" + d.toUTCString(); document.cookie = "cowboys={st.session_state.user + '&' + st.session_state.hash};" + expires + ";path=/";'
+    #setcookie = f'const d = new Date(); d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000)); const expires = "expires=" + d.toUTCString(); document.cookie = "cowboys={st.session_state.user + '&' + st.session_state.hash};" + expires + ";path=/";'
+    setcookie = f'const d = new Date(); d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000)); const expires = "expires=" + d.toUTCString(); document.cookie = "cowboys={st.session_state.user + '&' + st.session_state.hash};" + expires'
     streamlit_js_eval(js_expressions=setcookie)
 else:
     #st_cookie.apply()
@@ -782,6 +784,7 @@ else:
 #st.markdown('<img src="./app/static/giants.jpg">', unsafe_allow_html=True)
 st.title('Dallas Cowboys VETTED Season Ticket Holder Marketplace Web App')
 showpage(page[0])
+
 
 
 
