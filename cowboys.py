@@ -185,6 +185,36 @@ def updatedb(sql):
 def stlog(logstr):
     os.write(1,(logstr+'\n').encode())
 
+def menu(page):
+    html = f'<a href="https://www.facebook.com/groups/1041799047402614">Facebook Group</a>'
+#    if st.session_state.auth != 'Y':
+#        html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers">Buyers</a>'
+#        html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers">Sellers</a>'
+#        html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=login">Login</a>'
+#    else:
+        #html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers">Buyers</a>'
+        #html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers">Sellers</a>'
+#        html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers&user={st.session_state.user}&hash={st.session_state.hash}">Buyers</a>'
+#        html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers&user={st.session_state.user}&hash={st.session_state.hash}">Sellers</a>'
+#        html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=logout">Welcome {st.session_state.user}- Click to Logout</a>'                   
+    if st.session_state.auth != 'Y':
+        html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=users">VETTED Sellers</a>'
+        html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers">Buyers</a>'
+        html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers">Sellers</a>'
+        html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=login">Login</a>'
+    else:
+        html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=users">VETTED Sellers</a>'
+        if page == 'buyers':
+            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers&a=N&user={st.session_state.user}&hash={st.session_state.hash}">All Buyers</a>'
+        else:
+            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers&user={st.session_state.user}&hash={st.session_state.hash}">Buyers</a>'
+        if page == 'sellers':
+            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers&a=N&user={st.session_state.user}&hash={st.session_state.hash}">All Sellers</a>'
+        else:
+            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers&user={st.session_state.user}&hash={st.session_state.hash}">Sellers</a>'
+        html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=logout">Welcome {st.session_state.user}- Click to Logout</a>'                   
+    return html    
+
 def showpage(page):
     match page:
         case 'games':
@@ -241,14 +271,7 @@ def showpage(page):
                 users = pd.read_sql(f'SELECT Name,Contact FROM users WHERE Seller="Y" ORDER BY Name',connection)
                 connection.close()
                 c2 = st.container()
-                html = f'<a href="https://www.facebook.com/groups/1041799047402614">Facebook Group</a>'
-                html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers">Buyers</a>'
-                html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers">Sellers</a>'
-                if st.session_state.auth != 'Y':
-                    html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=login">Login</a>'
-                else:
-                    html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=logout">Welcome {st.session_state.user}- Click to Logout</a>'                   
-                c2.markdown(html,unsafe_allow_html=True)
+                c2.markdown(menu('users'),unsafe_allow_html=True)
                 c2.title('VETTED Sellers')
                 c2.dataframe(filter_dataframe(users,users.columns.tolist()),hide_index=True, column_config={'Contact':st.column_config.LinkColumn()})
         case 'sellers':
@@ -289,14 +312,7 @@ def showpage(page):
                     c1 = st.container()
                     c1.dataframe(areas,hide_index=True)
                 c2 = st.container()
-                html = f'<a href="https://www.facebook.com/groups/1041799047402614">Facebook Group</a>'
-                html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers">Buyers</a>'
-                html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=users">VETTED Seller Contacts</a>'
-                if st.session_state.auth != 'Y':
-                    html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=login">Login</a>'
-                else:
-                    html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=logout">Welcome {st.session_state.user}- Click to Logout</a>'                   
-                c2.markdown(html,unsafe_allow_html=True)
+                c2.markdown(menu('sellers'),unsafe_allow_html=True)
                 c2.title('Sellers')
                 c2.dataframe(filter_dataframe(sellers,sellers.columns.tolist()),hide_index=True, column_config={'Low_Price(ea)':st.column_config.NumberColumn(label='Low Price (ea)', format='$%d'),
                                                                      'High_Price(ea)':st.column_config.NumberColumn(label='High Price (ea)', format='$%d'),
@@ -315,16 +331,7 @@ def showpage(page):
                     c1 = st.container()
                     c1.dataframe(areas,hide_index=True)
                 c2 = st.container()
-                html = f'<a href="https://www.facebook.com/groups/1041799047402614">Facebook Group</a>'
-    #            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers">All Sellers</a>'
-    #            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers&user={user[0]}&hash={hash[0]}">Buyers</a>'
-                html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers&a=N">All Sellers</a>'
-                html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers">Buyers</a>'
-                if st.session_state.auth != 'Y':
-                    html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=login">Login</a>'
-                else:
-                    html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=logout">Welcome {st.session_state.user}- Click to Logout</a>'                   
-                c2.markdown(html,unsafe_allow_html=True)
+                c2.markdown(menu('sellers'),unsafe_allow_html=True)
                 c2.title(f'Seller = {seller}')
                 if len(sellers) > 0:
                     ss.edited_df = c2.data_editor(filter_dataframe(sellers,sellers.columns.tolist()),hide_index=True, column_config={'Low_Price(ea)':st.column_config.NumberColumn(label='Low Price (ea)', format='$%d'),
@@ -478,14 +485,7 @@ def showpage(page):
                     c1 = st.container()
                     c1.dataframe(areas,hide_index=True)
                 c2 = st.container()
-                html = f'<a href="https://www.facebook.com/groups/1041799047402614">Facebook Group</a>' 
-                html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers">Sellers</a>'
-                html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=users">VETTED Seller Contacts</a>'
-                if st.session_state.auth != 'Y':
-                    html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=login">Login</a>'
-                else:
-                    html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=logout">Welcome {st.session_state.user}- Click to Logout</a>'                   
-                c2.markdown(html,unsafe_allow_html=True)
+                c2.markdown(menu('buyers'),unsafe_allow_html=True)
                 c2.title('Buyers')
                 c2.dataframe(filter_dataframe(buyers,buyers.columns.tolist()),hide_index=True, column_config={'Price(ea)':st.column_config.NumberColumn(label='Price (ea)', format='$%d'),
                                                                      'Max_Qty':st.column_config.NumberColumn(label='Max Qty', format='%d'),
@@ -539,16 +539,7 @@ def showpage(page):
                     c1 = st.container()
                     c1.dataframe(areas,hide_index=True)
                 c2 = st.container()
-                html = f'<a href="https://www.facebook.com/groups/1041799047402614">Facebook Group</a>' 
-    #            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers">All Buyers</a>'
-    #            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers&user={user[0]}&hash={hash[0]}">Sellers</a>'
-                html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers&a=N">All Buyers</a>'
-                html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers">Sellers</a>'
-                if st.session_state.auth != 'Y':
-                    html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=login">Login</a>'
-                else:
-                    html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=logout">Welcome {st.session_state.user}- Click to Logout</a>'                   
-                c2.markdown(html,unsafe_allow_html=True)
+                c2.markdown(menu('buyers'),unsafe_allow_html=True)
                 c2.title(f'Buyer = {buyer}')
                 if len(buyers) > 0:
                     ss.edited_df = c2.data_editor(filter_dataframe(buyers,buyers.columns.tolist()),hide_index=True, column_config={'Price(ea)':st.column_config.NumberColumn(label='Price (ea)', format='$%d'),
@@ -671,16 +662,7 @@ def showpage(page):
                     c1 = st.container()
                     c1.dataframe(areas,hide_index=True)
                 c2 = st.container()
-                html = f'<a href="https://www.facebook.com/groups/1041799047402614">Facebook Group</a>' 
-    #            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers">All Buyers</a>'
-    #            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers&user={user[0]}&hash={hash[0]}">Sellers</a>'
-                html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers">Buyers</a>'
-                html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers">Sellers</a>'
-                if st.session_state.auth != 'Y':
-                    html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=login">Login</a>'
-                else:
-                    html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=logout">Welcome {st.session_state.user}- Click to Logout</a>'                   
-                c2.markdown(html,unsafe_allow_html=True)
+                c2.markdown(menu('newbuyers'),unsafe_allow_html=True)
                 c2.title(f'New Buyers')
                 if len(newbuyers) > 0:
                     ss.edited_df = c2.data_editor(filter_dataframe(newbuyers,newbuyers.columns.tolist()),hide_index=True, column_config={'Price(ea)':st.column_config.NumberColumn(label='Price (ea)', format='$%d'),
@@ -787,3 +769,4 @@ st.markdown('''<!-- Google tag (gtag.js) --><script async src="https://www.googl
 #st.markdown('<img src="./app/static/giants.jpg">', unsafe_allow_html=True)
 st.title('Dallas Cowboys VETTED Season Ticket Holder Marketplace Web App ' + st.session_state.auth + ' ' + st.session_state.user + ' ' + st.session_state.hash)
 showpage(page[0])
+
