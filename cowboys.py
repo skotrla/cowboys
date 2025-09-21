@@ -764,6 +764,7 @@ else:
             cowboys = cookie[cookie.find('cowboys=')+len('cowboys='):]
             st.session_state.user = cowboys[:cowboys.find('&')]
             st.session_state.hash = cowboys[cowboys.find('&')+1:]
+            st.markdown(f'{st.session_state.user + " " + st.session_state.hash}', unsafe_allow_html=True)
 #    if 'user' in st.session_state and 'hash' in st.session_state:
             if st.session_state.hash == hashlib.sha256((st.session_state.user+st.secrets['MYKEY']).encode()).hexdigest():
                 st.session_state.auth = 'Y'
@@ -776,9 +777,10 @@ else:
         st.session_state.user = ''
         st.session_state.hash = ''
 
-st.markdown('''<!-- Google tag (gtag.js) --><script async src="https://www.googletagmanager.com/gtag/js?id=G-3T8LW0P2B2"></script><script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-3T8LW0P2B2');</script>''',unsafe_allow_html=True)
+#st.markdown('''<!-- Google tag (gtag.js) --><script async src="https://www.googletagmanager.com/gtag/js?id=G-3T8LW0P2B2"></script><script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-3T8LW0P2B2');</script>''',unsafe_allow_html=True)
 #st.markdown('<img src="./app/static/giants.jpg">', unsafe_allow_html=True)
 st.title('Dallas Cowboys VETTED Season Ticket Holder Marketplace Web App')
 showpage(page[0])
+
 
 
