@@ -736,6 +736,7 @@ if hash[0] == hashlib.sha256((user[0]+st.secrets['MYKEY']).encode()).hexdigest()
     st.session_state.auth = 'Y'
     #st_cookie.update('user')
     #st_cookie.update('hash')
+    setcookie = f'const d = new Date(); d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000)); const expires = "expires=" + d.toUTCString(); document.cookie = "cowboys={st.session_state.user + '&' + st.session_state.hash};" + expires'
 else:
     #st_cookie.apply()
 #    if 'user' not in st.session_state:
@@ -753,13 +754,19 @@ else:
                 hash = hash[:hash.find(';')]
                 st.session_state.hash = hash
                 st_cookie.update('hash')
-    if 'user' in st.session_state and 'hash' in st.session_state:
-        if st.session_state.hash == hashlib.sha256((st.session_state.user+st.secrets['MYKEY']).encode()).hexdigest():
-            st.session_state.auth = 'Y'
-        else:
-            st.session_state.auth = 'N'
-            st.session_state.user = ''
-            st.session_state.hash = ''
+    cookie = streamlit_js_eval(js_expressions="document.cookie")
+    if cookie.find('cowboys=') > -1:
+        if cookie is not None:
+            cowboys = cookie[cookie.find('cowboys=')+len('cowvboys='):]
+            st.session_state.user = cowboys[:cowboys.find('&')]
+            st.session_state.hash = cowboys[cowboys.find('&')+1:]
+#    if 'user' in st.session_state and 'hash' in st.session_state:
+            if st.session_state.hash == hashlib.sha256((st.session_state.user+st.secrets['MYKEY']).encode()).hexdigest():
+                st.session_state.auth = 'Y'
+            else:
+                st.session_state.auth = 'N'
+                st.session_state.user = ''
+                st.session_state.hash = ''
     else:
         st.session_state.auth = 'N'
         st.session_state.user = ''
@@ -769,6 +776,7 @@ st.markdown('''<!-- Google tag (gtag.js) --><script async src="https://www.googl
 #st.markdown('<img src="./app/static/giants.jpg">', unsafe_allow_html=True)
 st.title('Dallas Cowboys VETTED Season Ticket Holder Marketplace Web App')
 showpage(page[0])
+
 
 
 
