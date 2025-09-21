@@ -739,7 +739,7 @@ if hash[0] == hashlib.sha256((user[0]+st.secrets['MYKEY']).encode()).hexdigest()
     st.session_state.auth = 'Y'
     #st_cookie.update('user')
     #st_cookie.update('hash')
-    setcookie = f'const d = new Date(); d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000)); const expires = "expires=" + d.toUTCString(); document.cookie = "cowboys={st.session_state.user + '&' + st.session_state.hash};" + expires'
+    setcookie = f'const d = new Date(); d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000)); const expires = "expires=" + d.toUTCString(); document.cookie = "cowboys={st.session_state.user + '&' + st.session_state.hash};" + expires + ";path=/";'
     streamlit_js_eval(js_expressions=setcookie)
 else:
     #st_cookie.apply()
@@ -780,4 +780,5 @@ st.markdown('''<!-- Google tag (gtag.js) --><script async src="https://www.googl
 #st.markdown('<img src="./app/static/giants.jpg">', unsafe_allow_html=True)
 st.title('Dallas Cowboys VETTED Season Ticket Holder Marketplace Web App')
 showpage(page[0])
+
 
