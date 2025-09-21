@@ -763,8 +763,9 @@ else:
         if cookie.find('cowboys=') > -1:
             cowboys = cookie[cookie.find('cowboys=')+len('cowboys='):]
             st.session_state.user = cowboys[:cowboys.find('&')]
-            st.session_state.hash = cowboys[cowboys.find('&')+1:]
-            st.markdown(f'{st.session_state.user + " " + st.session_state.hash}', unsafe_allow_html=True)
+            hash = cowboys[cowboys.find('&')+1:]
+            st.session_state.hash = hash[:hash.find(';')]
+            #st.markdown(f'{st.session_state.user + " " + st.session_state.hash}', unsafe_allow_html=True)
 #    if 'user' in st.session_state and 'hash' in st.session_state:
             if st.session_state.hash == hashlib.sha256((st.session_state.user+st.secrets['MYKEY']).encode()).hexdigest():
                 st.session_state.auth = 'Y'
@@ -781,6 +782,7 @@ else:
 #st.markdown('<img src="./app/static/giants.jpg">', unsafe_allow_html=True)
 st.title('Dallas Cowboys VETTED Season Ticket Holder Marketplace Web App')
 showpage(page[0])
+
 
 
 
