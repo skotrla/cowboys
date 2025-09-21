@@ -203,7 +203,7 @@ def menu(page):
         html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers">Sellers</a>'
         html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=login">Login</a>'
     else:
-        html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=users">VETTED Sellers</a>'
+        html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=users&user={st.session_state.user}&hash={st.session_state.hash}">VETTED Sellers</a>'
         if page == 'buyers':
             html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers&a=N&user={st.session_state.user}&hash={st.session_state.hash}">All Buyers</a>'
         else:
@@ -769,4 +769,5 @@ st.markdown('''<!-- Google tag (gtag.js) --><script async src="https://www.googl
 #st.markdown('<img src="./app/static/giants.jpg">', unsafe_allow_html=True)
 st.title('Dallas Cowboys VETTED Season Ticket Holder Marketplace Web App ' + st.session_state.auth + ' ' + st.session_state.user + ' ' + st.session_state.hash)
 showpage(page[0])
+
 
