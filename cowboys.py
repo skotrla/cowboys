@@ -697,7 +697,8 @@ def showpage(page):
             st.session_state.user = ''
             st.session_state.hash = ''
             st.session_state.auth = 'N'
-            setcookie = f'const d = new Date(); d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000)); const expires = "expires=" + d.toUTCString(); document.cookie = "cowboys={st.session_state.user + '&' + st.session_state.hash};" + expires + ";path=/";'
+            #setcookie = f'const d = new Date(); d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000)); const expires = "expires=" + d.toUTCString(); document.cookie = "cowboys={st.session_state.user + '&' + st.session_state.hash};" + expires + ";path=/";'
+            setcookie = f'const d = new Date(); d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000)); const expires = "expires=" + d.toUTCString(); document.cookie = "cowboys={st.session_state.user + '&' + st.session_state.hash};" + expires'
             streamlit_js_eval(js_expressions=setcookie)
             showpage('sellers')
         case 'login':
@@ -784,6 +785,7 @@ else:
 #st.markdown('<img src="./app/static/giants.jpg">', unsafe_allow_html=True)
 st.title('Dallas Cowboys VETTED Season Ticket Holder Marketplace Web App')
 showpage(page[0])
+
 
 
 
