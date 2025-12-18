@@ -199,19 +199,19 @@ def menu(page):
 #        html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=logout">Welcome {st.session_state.user}- Click to Logout</a>'                   
     if st.session_state.auth != 'Y':
         html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=users">VETTED Sellers</a>'
-        html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers">Buyers</a>'
-        html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers">Sellers</a>'
+        html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers">Looking For</a>'
+        html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers">For Sale</a>'
         html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=login">Login</a>'
     else:
         html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=users&user={st.session_state.user}&hash={st.session_state.hash}">VETTED Sellers</a>'
         if page == 'buyers':
-            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers&a=N&user={st.session_state.user}&hash={st.session_state.hash}">All Buyers</a>'
+            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers&a=N&user={st.session_state.user}&hash={st.session_state.hash}">All Looking For</a>'
         else:
-            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers&user={st.session_state.user}&hash={st.session_state.hash}">Buyers</a>'
+            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=buyers&user={st.session_state.user}&hash={st.session_state.hash}">My Looking For</a>'
         if page == 'sellers':
-            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers&a=N&user={st.session_state.user}&hash={st.session_state.hash}">All Sellers</a>'
+            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers&a=N&user={st.session_state.user}&hash={st.session_state.hash}">All For Sale</a>'
         else:
-            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers&user={st.session_state.user}&hash={st.session_state.hash}">Sellers</a>'
+            html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=sellers&user={st.session_state.user}&hash={st.session_state.hash}">My For Sale</a>'
         html += f'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_self" href="?page=logout">Welcome {st.session_state.user}- Click to Logout</a>'                   
     return html    
 
@@ -785,6 +785,7 @@ else:
 #st.markdown('<img src="./app/static/giants.jpg">', unsafe_allow_html=True)
 st.title('Dallas Cowboys VETTED Season Ticket Holder Marketplace Web App')
 showpage(page[0])
+
 
 
 
